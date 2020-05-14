@@ -44,21 +44,16 @@ class MyWidget(OWWidget):
     # def __init__(self, parent=None, view_box=ViewBox):        
         super().__init__()
         
-        x = [1,2,3,4,5,6,7,8,9,10]
-        y = [30,32,34,32,33,31,29,32,35,45]
-        
-        common_options = dict(
-            labelWidth=50, orientation=Qt.Horizontal, sendSelectedValue=True,
-            
-            contentsLength=14)
+        common_options = dict(labelWidth=50, orientation=Qt.Horizontal, 
+                              sendSelectedValue=True, contentsLength=14)
         self.attr_box = gui.vBox(self.controlArea, True)
         self.infoa = gui.widgetLabel(
             self.attr_box, "No data on input yet, waiting to get something.")
         
         self.btnAdd = gui.button(self.attr_box, self, "Add Axis", 
                                  callback=self.addAxis)
+
         self.btnAdd.setEnabled(False)
-        
 
         dmod = DomainModel
         self.xy_model = DomainModel(dmod.MIXED, valid_types=ContinuousVariable)
@@ -76,6 +71,17 @@ class MyWidget(OWWidget):
             model=self.xy_model, **common_options,
             searchable=True)
         
+        gui.rubber(self.attr_box);
+        
+        self.scaleBox = gui.vBox(self.attr_box, True)
+        self.infoa = gui.widgetLabel(self.scaleBox, "Scale Y Data")
+        self.scaleBoxBtn = gui.hBox(self.scaleBox, True)
+        self.btnMax = gui.button(self.scaleBoxBtn, self, "0 - Max", 
+                                 callback=self.max0)        
+        self.btnMinMax= gui.button(self.scaleBoxBtn, self, "Fit", 
+                                 callback=self.minmax)
+        self.scaleBox.setEnabled(False)
+        
         box = gui.vBox(self.mainArea, True, margin=0)        
         # self.graph = pg.PlotWidget(self)
         # box.layout().addWidget(self.graph)
@@ -92,15 +98,6 @@ class MyWidget(OWWidget):
         self.subplot = self.graph.getFigure().add_subplot()
         # self.subplot.plot(x,y)
         
-        self.scaleBox = gui.vBox(self.attr_box, True)
-        self.infoa = gui.widgetLabel(self.scaleBox, "Scale Y Data")
-        self.scaleBoxBtn = gui.hBox(self.scaleBox, True)
-        self.btnMax = gui.button(self.scaleBoxBtn, self, "0 - Max", 
-                                 callback=self.max0)        
-        self.btnMinMax= gui.button(self.scaleBoxBtn, self, "Fit", 
-                                 callback=self.minmax)
-        self.scaleBox.setEnabled(False)
-        
         self.show()
         
     @Inputs.data
@@ -113,12 +110,13 @@ class MyWidget(OWWidget):
         else:
             self.Outputs.selected.send(None)
 
-    def addAxis(self):        
+    def addAxis(self, index):
+        common_options = dict(labelWidth=50, orientation=Qt.Horizontal, 
+                              sendSelectedValue=True, contentsLength=14)
         self.cb_attr_y = gui.comboBox(
-            self.attr_box, self, "attr_new", label="Axis y new:",
+            self.attr_box, self, "attr_new", label="Axis %i new:" %index,
             callback=self.set_attr_from_combo,
-            # model=self.xy_model, **common_options,
-            model=self.xy_model,
+            model=self.xy_model, **common_options,
             searchable=True)
         self.cb_attr_y.setEnabled(False)
 
@@ -202,13 +200,12 @@ if __name__ == "__main__":
     # table = Table("iris")
     table = Table("WK1_20200201.csv")
     
-    WidgetPreview(MyWidget).run(set_data=table)
+    # WidgetPreview(MyWidget).run(set_data=table)
     # WidgetPreview(MyWidget).run()
+    
+    a = QApplication([])
+    ow = MyWidget()
 
-    # a = QApplication(sys.argv)
-    # ow = MyWidget()
-
-    # ow.set_data(table)
-    # ow.show()
-
-    # a.exec()
+    ow.set_data(table)
+    ow.show()
+    a.exec()
