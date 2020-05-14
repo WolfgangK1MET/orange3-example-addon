@@ -164,9 +164,10 @@ class MyWidget(OWWidget):
         self.setup_plot()
         self.commit()
 
-    def setup_plot(self):        
-        self.subplot.clear()
-        self.subplot.set_xlabel(self.attr_x.name)
+    def setup_plot(self):    
+        if self.subplot is not None:
+            self.subplot.clear()
+            self.subplot.set_xlabel(self.attr_x.name)
         
         if self.selected is not None:
             self.subplot.plot(self.selected.X, label=self.attr_y.name)
