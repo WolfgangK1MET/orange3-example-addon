@@ -52,8 +52,8 @@ class OWCrossCorrelate(widget.OWWidget):
     # Widget needs a name, or it is considered an abstract widget
     # and not shown in the menu.
     name = "Cross Correlate"
-    description = "A widget for cross correlations"
-    icon = "icons/mywidget.svg"
+    description = "A widget for simple cross correlations of 2 inputs"
+    icon = "icons/owcrosscorrelate.svg"
     priority = 10
     
     class Inputs:

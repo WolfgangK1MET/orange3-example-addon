@@ -25,12 +25,12 @@ import mpl_toolkits.axisartist as AA
 import matplotlib.pyplot as plt
 
 # class MyWidget(OWDataProjectionWidget):
-class MyWidget(OWWidget):
+class OWEasyPlot(OWWidget):
     # Widget needs a name, or it is considered an abstract widget
     # and not shown in the menu.
-    name = "Test WG"
-    description = "A widget for tests from Wolfgang"
-    icon = "icons/mywidget.svg"
+    name = "Easy Matplot"
+    description = "A widget for easy plots with matplotlib"
+    icon = "icons/oweasyplot.svg"
     want_main_area = True
     
     class Inputs:
@@ -85,6 +85,15 @@ class MyWidget(OWWidget):
         
         gui.rubber(self.attr_box);
         
+        self.calcBox = gui.vBox(self.attr_box, True)
+        self.deOffsetBtn = gui.button(self.calcBox, self, "Remove Offset", 
+                                 callback=self.deOffset)   
+        self.deOffsetBtn.setEnabled(False)
+        self.xCorrBtn = gui.button(self.calcBox, self, "X-Correlate", 
+                                 callback=self.xCorr)   
+        self.xCorrBtn.setEnabled(False)
+        self.corrData = None
+        
         self.scaleBox = gui.vBox(self.attr_box, True)
         self.infoa = gui.widgetLabel(self.scaleBox, "Scale Y Data")
         self.scaleBoxBtn = gui.hBox(self.scaleBox, True)
@@ -108,6 +117,8 @@ class MyWidget(OWWidget):
         box.layout().addWidget(self.graph)
         # self.graph.getFigure().plot(x,y)
         self.subplot = self.graph.getFigure().add_subplot()
+        # self.subplot2 = self.graph.getFigure().add_subplot()
+        
         # self.subplot.plot(x,y)
         
         self.show()
@@ -134,8 +145,34 @@ class MyWidget(OWWidget):
         
         self.btn_list.append(cb_attr_y)
         self.attr_list.append(ContextSetting(None))
+                
+        self.btnAdd.setDisabled(len(self.btn_list) >= 5)
+        # self.deOffsetBtn.setEnabled(True)
+        self.xCorrBtn.setEnabled(True)
+
+    def deOffset(self):
+        self.data[:, self.attr_y].X = self.data[:, self.attr_y].X-np.mean(self.data[:, self.attr_y].X)
+        self.data[:, self.attr_y1].X = self.data[:, self.attr_y1].X-np.mean(self.data[:, self.attr_y1].X)
         
-        self.btnAdd.setDisabled(len(self.btn_list) >= 5)        
+        self.commit()
+
+    def xCorr(self):
+        x1 = np.array(self.data[:, self.attr_y].X)
+        x1 = x1-np.mean(x1)
+        x1 = np.reshape(x1, len(x1))
+        x2 = np.array(self.data[:, self.attr_y1].X)
+        x2 = x2-np.mean(x2)
+        x2 = np.reshape(x2, len(x2))
+        
+        self.corrData = np.correlate(x1, x2, "Same")        
+        # corrData = corrData/np.max(corrData)
+        
+        maxTop = np.max([self.data[:, self.attr_y].X, self.data[:, self.attr_y1].X])
+        minBot= np.min([self.data[:, self.attr_y].X, self.data[:, self.attr_y1].X])
+        self.corrData = (self.corrData/np.max(self.corrData) + 1)/2        
+        self.corrData = self.corrData*(maxTop-minBot) + minBot;
+        
+        self.attr_changed()
 
     def max0(self):
         self.subplot.autoscale(enable=False, axis='y')
@@ -186,17 +223,19 @@ class MyWidget(OWWidget):
     def setup_plot(self):    
         if self.subplot is not None:
             self.subplot.clear()
-            self.subplot.set_xlabel(self.attr_x.name)
-        
+            yLabel = ''
+            
             if self.selected is not None:
                 self.subplot.plot(self.selected.X, label=self.attr_y.name)
-                self.subplot.set_ylabel(self.attr_y.name)
-
+                ylabel = self.attr_y.name;
+                
             if len(self.attr_list) > 1:
                 self.subplot_axis(self.attr_y1)
+                ylabel = ylabel + self.attr_y1.name
                 
             if len(self.attr_list) > 2:
                 self.subplot_axis(self.attr_y2)
+                ylabel = ylabel + self.attr_y2.name
                 
             if len(self.attr_list) > 3:
                 self.subplot_axis(self.attr_y3)
@@ -205,19 +244,36 @@ class MyWidget(OWWidget):
                 self.subplot_axis(self.attr_y4)
                 
             if len(self.attr_list) > 5:
-                self.subplot_axis(self.attr_y5)                
+                self.subplot_axis(self.attr_y5)
+            
+            self.subplot.set_xlabel(self.attr_x.name)
+            self.subplot.set_ylabel(ylabel)
+            
+            if(self.corrData is not None):
+                self.subplot.plot(self.corrData, label='X-Corr')
+                secax = self.subplot.secondary_yaxis('right', functions=(self.Y1, self.Y2))
+                secax.set_ylabel('X-Corr')
+                # self.subplot.set_y2label('X-Corr')
             
         self.commit()
         
         # self.graph.reset_graph()
         # self.__pending_selection = self.selection or self.__pending_selection
         # self.apply_selection()
+            
+    def Y1(self, y):
+        return y
+    
+    
+    def Y2(self, y):
+        return (y - 3)
 
     def subplot_axis(self, attr):
         self.subplot.plot(self.data[:, attr].X, label=attr.name)
         # self.subplot.set_ylabel(attr.name)        
 
     def commit(self):
+        self.subplot.legend()
         self.graph.draw()
         
         self.Outputs.selected.send(self.selected)
@@ -239,11 +295,8 @@ if __name__ == "__main__":
     # table = Table("iris")
     table = Table("WK1_20200201.csv")
     
-    # WidgetPreview(MyWidget).run(set_data=table)
-    # WidgetPreview(MyWidget).run()
-    
     a = QApplication([])
-    ow = MyWidget()
+    ow = OWEasyPlot()
 
     ow.set_data(table)
     ow.show()
