@@ -248,6 +248,19 @@ class OWEasyPlot(OWWidget):
             
             self.subplot.set_xlabel(self.attr_x.name)
             self.subplot.set_ylabel(ylabel)
+
+            # only valid for WK1_20200201.csv for demo purposes
+            self.subplot.set_xticks([0, 40, 80, 120, 160])
+            x0 = "00:04:56"
+            x1 = "05:29:26"
+            x2 = "11:00:56"
+            x3 = "16:38:16"
+            x4 = "22:15:15"
+            self.subplot.set_xticklabels([x0, x1, x2, x3, x4])
+            
+            # self.subplot.set_xticklabels(["$0$", r"$2$", r"$3$", r"$4$", r"$5$"])
+            # self.subplot.set_xticklabels(["$0$", r"$\frac{1}{2}\pi$",
+                     # r"$\pi$", r"$\frac{3}{2}\pi$", r"$2\pi$"])
             
             if(self.corrData is not None):
                 self.subplot.plot(self.corrData, label='X-Corr')
