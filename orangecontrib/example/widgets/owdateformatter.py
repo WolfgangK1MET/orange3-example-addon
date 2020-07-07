@@ -7,8 +7,6 @@ from Orange.widgets.widget import OWWidget, Input, Output
 from Orange.widgets import widget, gui
 
 class DatetimeFormatter(OWWidget):
-    # Widget needs a name, or it is considered an abstract widget
-    # and not shown in the menu.
     name = "DatetimeFormatter"
     icon = "icons/mywidget.svg"
     want_main_area = False
@@ -20,14 +18,15 @@ class DatetimeFormatter(OWWidget):
         self.include_milliseconds = False
         
         self.optionsBox = gui.widgetBox(self.controlArea, "Options")
-        self.checkBox = gui.checkBox(self.optionsBox, self, "include_milliseconds", "Include Milliseconds", callback=self.reloadData)
-        self.checkBox.setDisabled(True)
+        self.checkBoxIncMilliseconds = gui.checkBox(self.optionsBox, self, "include_milliseconds", "Include Milliseconds", callback=self.reloadData)
+        self.checkBoxIncMilliseconds.setDisabled(True)
 
     class Inputs:
         data_input = Input("Data", Orange.data.Table)
-
+        
     class Outputs:
         data_output = Output("Data", Orange.data.Table)    
+    
     
     @Inputs.data_input
     def set_data_input(self, dataset):
@@ -35,7 +34,7 @@ class DatetimeFormatter(OWWidget):
             self.dataset = dataset
             self.set_output(self.dataset)
         else:
-            self.checkBox.setDisabled(True)
+            self.checkBoxIncMilliseconds.setDisabled(True)
             self.Outputs.data_output.send(None)
     
     @staticmethod
@@ -50,9 +49,8 @@ class DatetimeFormatter(OWWidget):
             
         return False
 
-    def is_date_and_time_splitted(self):
-        dataset = self.dataset
-        
+    @staticmethod
+    def is_date_and_time_splitted(dataset):
         domain = dataset.domain
         domain_attributes = list(domain.attributes)
         domain_metas = list(domain.metas)
@@ -62,78 +60,61 @@ class DatetimeFormatter(OWWidget):
         
         return count_in_domain + count_in_meta == 2
 
+    def output_new_table(self, domain_attributes, domain_metas, result_col_name, time_strings, is_datetime_meta):
+        if is_datetime_meta == True:
+            domain_metas.insert(0, TimeVariable(result_col_name))
+        else:
+            domain_attributes.insert(0, TimeVariable(result_col_name))
+        
+        new_domain = Domain(attributes = tuple(domain_attributes), metas = domain_metas, class_vars = self.dataset.domain.class_vars)
+        new_table = self.dataset.transform(new_domain)
+        
+        for index, row in enumerate(new_table): 
+            row[result_col_name] = time_strings[index] 
+        
+        self.Outputs.data_output.send(new_table)
+
     def handle_splitted_date_and_time(self, date_col_name, time_col_name, result_col_name, formating):
-        dataset = self.dataset
-        
-        domain = dataset.domain
-        domain_attributes = list(domain.attributes)
-        domain_metas = list(domain.metas)
-        
-        is_datetime_meta = DatetimeFormatter.is_meta(dataset, [date_col_name, time_col_name])
+        domain_attributes = list(self.dataset.domain.attributes)
+        domain_metas = list(self.dataset.domain.metas)
         time_strings = []
         
-        for row in dataset:
+        for row in self.dataset:
             dt = datetime.strptime(f'{row[date_col_name]}' + " " + f'{row[time_col_name]}', formating)
             
             if(self.include_milliseconds == False):
                 dt = dt.replace(microsecond = 0)
             
             time_strings.append(dt.isoformat(timespec="milliseconds"))
-
-        if is_datetime_meta == True:
-            domain_metas.insert(0, TimeVariable(result_col_name))
-        else:
-            domain_attributes.insert(0, TimeVariable(result_col_name))
             
         domain_attributes = list(filter(lambda x: str(x) != date_col_name and str(x) != time_col_name, domain_attributes))
-        domain_metas = filter(lambda x: str(x) != date_col_name and str(x) != time_col_name, domain_metas)
+        domain_metas = list(filter(lambda x: str(x) != date_col_name and str(x) != time_col_name, domain_metas))
         
-        new_domain = Domain(attributes = tuple(domain_attributes), metas = domain_metas, class_vars = domain.class_vars)
-        new_table = dataset.transform(new_domain)
-        
-        for index, row in enumerate(new_table): 
-            row[result_col_name] = time_strings[index] 
-            
-        self.Outputs.data_output.send(new_table)
+        is_datetime_meta =  DatetimeFormatter.is_meta(self.dataset, [date_col_name, time_col_name])
+        self.output_new_table(domain_attributes, domain_metas, result_col_name, time_strings, is_datetime_meta)
+    
             
     def handle_date_and_time(self, date_and_time_col_name, result_col_name, formating):
-        dataset = self.dataset
-        
-        domain = dataset.domain
-        domain_attributes = list(domain.attributes)
-        domain_metas = list(domain.metas)
-        
-        is_datetime_meta = DatetimeFormatter.is_meta(dataset, [date_and_time_col_name])
+        domain_attributes = list(self.dataset.domain.attributes)
+        domain_metas = list(self.dataset.domain.metas)
         time_strings = []
         
-        for row in dataset:
+        for row in self.dataset:
             dt = datetime.strptime(f'{row[date_and_time_col_name]}', formating)
-            
             time_strings.append(dt.isoformat())
             
-        if is_datetime_meta == True:
-            domain_metas.insert(0, TimeVariable(result_col_name))
-        else:
-            domain_attributes.insert(0, TimeVariable(result_col_name))
-            
         domain_attributes = list(filter(lambda x: str(x) != date_and_time_col_name, domain_attributes))
-        domain_metas = filter(lambda x: str(x) != date_and_time_col_name, domain_metas)
+        domain_metas = list(filter(lambda x: str(x) != date_and_time_col_name, domain_metas))
         
-        new_domain = Domain(attributes = tuple(domain_attributes), metas = domain_metas, class_vars = domain.class_vars)
-        new_table = dataset.transform(new_domain)
+        is_datetime_meta =  DatetimeFormatter.is_meta(self.dataset, [date_and_time_col_name])
+        self.output_new_table(domain_attributes, domain_metas, result_col_name, time_strings, is_datetime_meta)
         
-        for index, row in enumerate(new_table): 
-            row[result_col_name] = time_strings[index] 
-        
-        self.Outputs.data_output.send(new_table)
-
     def set_output(self, dataset):
-        
-        if self.is_date_and_time_splitted():
-            self.checkBox.setDisabled(False)
+        if DatetimeFormatter.is_date_and_time_splitted(dataset):
+            self.checkBoxIncMilliseconds.setDisabled(False)
             self.handle_splitted_date_and_time("Datum", "Uhrzeit", "DatumUhrzeit", "%d.%m.%Y %H:%M:%S,%f")
         else:
-            self.checkBox.setDisabled(True)
+            self.checkBoxIncMilliseconds.setDisabled(True)
             self.handle_date_and_time("ISOZEIT", "DatumUhrzeit",  "%d.%m.%Y %H:%M:%S")
             
     def reloadData(self):
