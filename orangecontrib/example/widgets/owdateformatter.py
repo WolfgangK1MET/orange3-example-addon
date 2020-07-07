@@ -32,7 +32,7 @@ class DatetimeFormatter(OWWidget):
     def set_data_input(self, dataset):
         if dataset is not None:
             self.dataset = dataset
-            self.set_output(self.dataset)
+            self.set_output()
         else:
             self.checkBoxIncMilliseconds.setDisabled(True)
             self.Outputs.data_output.send(None)
@@ -50,13 +50,13 @@ class DatetimeFormatter(OWWidget):
         return False
 
     @staticmethod
-    def is_date_and_time_splitted(dataset):
+    def is_date_and_time_splitted(dataset, date_col_name, time_col_name):
         domain = dataset.domain
         domain_attributes = list(domain.attributes)
         domain_metas = list(domain.metas)
         
-        count_in_domain = len(list(filter(lambda x: str(x) == "Datum" or str(x) == "Uhrzeit", domain_attributes)))
-        count_in_meta = len(list(filter(lambda x: str(x) == "Datum" or str(x) == "Uhrzeit", domain_metas)))
+        count_in_domain = len(list(filter(lambda x: str(x) == date_col_name or str(x) == time_col_name, domain_attributes)))
+        count_in_meta = len(list(filter(lambda x: str(x) == date_col_name or str(x) == time_col_name, domain_metas)))
         
         return count_in_domain + count_in_meta == 2
 
@@ -109,14 +109,15 @@ class DatetimeFormatter(OWWidget):
         is_datetime_meta =  DatetimeFormatter.is_meta(self.dataset, [date_and_time_col_name])
         self.output_new_table(domain_attributes, domain_metas, result_col_name, time_strings, is_datetime_meta)
         
-    def set_output(self, dataset):
-        if DatetimeFormatter.is_date_and_time_splitted(dataset):
+    def set_output(self):
+        if DatetimeFormatter.is_date_and_time_splitted(self.dataset, "Datum", "Uhrzeit"):
             self.checkBoxIncMilliseconds.setDisabled(False)
             self.handle_splitted_date_and_time("Datum", "Uhrzeit", "DatumUhrzeit", "%d.%m.%Y %H:%M:%S,%f")
         else:
             self.checkBoxIncMilliseconds.setDisabled(True)
             self.handle_date_and_time("ISOZEIT", "DatumUhrzeit",  "%d.%m.%Y %H:%M:%S")
-            
+    
+    # This function is used for callback, when include_milliseconds is changed
     def reloadData(self):
         self.set_data_input(self.dataset)
 
