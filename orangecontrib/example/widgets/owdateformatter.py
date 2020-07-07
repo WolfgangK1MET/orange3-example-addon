@@ -3,8 +3,19 @@ import Orange.data
 from datetime import datetime
 
 from Orange.data import Table, TimeVariable, Domain
-from Orange.widgets.widget import OWWidget, Input, Output
+from Orange.widgets.widget import OWWidget, Input, Output, Msg
 from Orange.widgets import widget, gui
+
+from enum import Enum
+
+class DatetimeType(Enum):
+    TOO_MANY_COLUMNS_FOUND = 0
+    NO_COLUMN_FOUND = 1
+    ISODATETIME = 2
+    DE_DATETIME_SEPARATE = 3
+    NOT_ENOUGH_COLUMNS_FOUND = 4
+    
+    
 
 class DatetimeFormatter(OWWidget):
     name = "DatetimeFormatter"
@@ -20,6 +31,7 @@ class DatetimeFormatter(OWWidget):
         self.optionsBox = gui.widgetBox(self.controlArea, "Options")
         self.checkBoxIncMilliseconds = gui.checkBox(self.optionsBox, self, "include_milliseconds", "Include Milliseconds", callback=self.reloadData)
         self.checkBoxIncMilliseconds.setDisabled(True)
+        self.Warning.empty_data(shown = self.dataset is None)
 
     class Inputs:
         data_input = Input("Data", Orange.data.Table)
@@ -27,9 +39,16 @@ class DatetimeFormatter(OWWidget):
     class Outputs:
         data_output = Output("Data", Orange.data.Table)    
     
+    class Error(OWWidget.Error):
+        unsupported_date_format = Msg("The given date format is not supported.")
+        no_fitting_columns_found = Msg("No date and time column was found.")
+    
+    class Warning(OWWidget.Warning):
+        empty_data = Msg("There is no data to format.")
     
     @Inputs.data_input
     def set_data_input(self, dataset):
+        self.Warning.empty_data(shown = dataset is None)
         if dataset is not None:
             self.dataset = dataset
             self.set_output()
@@ -50,15 +69,35 @@ class DatetimeFormatter(OWWidget):
         return False
 
     @staticmethod
-    def is_date_and_time_splitted(dataset, date_col_name, time_col_name):
+    def detect_datetime_columns(dataset, date_col_name, time_col_name, datetime_col_name):
         domain = dataset.domain
         domain_attributes = list(domain.attributes)
         domain_metas = list(domain.metas)
         
         count_in_domain = len(list(filter(lambda x: str(x) == date_col_name or str(x) == time_col_name, domain_attributes)))
         count_in_meta = len(list(filter(lambda x: str(x) == date_col_name or str(x) == time_col_name, domain_metas)))
+        count = count_in_domain + count_in_meta
         
-        return count_in_domain + count_in_meta == 2
+        if count == 0:
+            count = len(list(filter(lambda x: str(x) == datetime_col_name, domain_attributes)))
+            count = count + len(list(filter(lambda x: str(x) == datetime_col_name, domain_metas)))
+            
+            if count == 1:
+                return DatetimeType.ISODATETIME
+            elif count > 1:
+                return DatetimeType.TOO_MANY_COLUMNS_FOUND
+            
+            return DatetimeType.NO_COLUMN_FOUND
+        
+        if count == 1:
+            return DatetimeType.NOT_ENOUGH_COLUMNS_FOUND
+        
+        if count == 2:
+            return DatetimeType.DE_DATETIME_SEPARATE 
+        
+        return DatetimeType.TOO_MANY_COLUMNS_FOUND
+        
+        
 
     def output_new_table(self, domain_attributes, domain_metas, result_col_name, time_strings, is_datetime_meta):
         if is_datetime_meta == True:
@@ -110,12 +149,18 @@ class DatetimeFormatter(OWWidget):
         self.output_new_table(domain_attributes, domain_metas, result_col_name, time_strings, is_datetime_meta)
         
     def set_output(self):
-        if DatetimeFormatter.is_date_and_time_splitted(self.dataset, "Datum", "Uhrzeit"):
+        detectedFormat = DatetimeFormatter.detect_datetime_columns(self.dataset, "Datum", "Uhrzeit", "ISOZEIT")
+        self.Error.no_fitting_columns_found(shown = False)
+        
+        if detectedFormat == DatetimeType.DE_DATETIME_SEPARATE:
             self.checkBoxIncMilliseconds.setDisabled(False)
             self.handle_splitted_date_and_time("Datum", "Uhrzeit", "DatumUhrzeit", "%d.%m.%Y %H:%M:%S,%f")
-        else:
+        elif detectedFormat == DatetimeType.ISODATETIME:
             self.checkBoxIncMilliseconds.setDisabled(True)
             self.handle_date_and_time("ISOZEIT", "DatumUhrzeit",  "%d.%m.%Y %H:%M:%S")
+        else:
+            self.dataset = None
+            self.Error.no_fitting_columns_found(shown = True)
     
     # This function is used for callback, when include_milliseconds is changed
     def reloadData(self):
@@ -127,7 +172,6 @@ if __name__ == "__main__":
     
     # table = Table("iris")
     table = Table("WK1_20200201_orig.csv")
-
     
     a = QApplication([])
     df = DatetimeFormatter()
