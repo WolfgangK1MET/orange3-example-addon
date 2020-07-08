@@ -105,7 +105,7 @@ class DatetimeFormatter(OWWidget):
         else:
             domain_attributes.insert(0, TimeVariable(result_col_name))
         
-        new_domain = Domain(attributes = tuple(domain_attributes), metas = domain_metas, class_vars = self.dataset.domain.class_vars)
+        new_domain  = Domain(attributes = tuple(domain_attributes), metas = domain_metas, class_vars = self.dataset.domain.class_vars)
         new_table = self.dataset.transform(new_domain)
         
         for index, row in enumerate(new_table): 
