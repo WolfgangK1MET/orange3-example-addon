@@ -53,7 +53,7 @@ class DatetimeFormatter(OWWidget):
         # Turn of all errors and warnings when new input is set 
         self.Error.no_fitting_columns_found(shown = False)
         self.Error.unsupported_date_format(shown = False)
-        self.Warning.empty_data(shown = True)
+        self.Warning.empty_data(shown = dataset is None)
         
         # Disable milliseconds checkbox because it is not sure if it is useable
         self.cb_include_milliseconds.setDisabled(True)
@@ -104,6 +104,7 @@ class DatetimeFormatter(OWWidget):
             
         for index, row in enumerate(new_table):
             row["DatumUhrzeit"] = time_strings[index]
+        
         
         self.Outputs.output_data.send(new_table)
         handled = True
