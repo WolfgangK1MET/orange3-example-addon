@@ -105,7 +105,6 @@ class DatetimeFormatter(OWWidget):
         for index, row in enumerate(new_table):
             row["DatumUhrzeit"] = time_strings[index]
         
-        
         self.Outputs.output_data.send(new_table)
         handled = True
         
@@ -117,7 +116,7 @@ class DatetimeFormatter(OWWidget):
         
         
 class TableUtility:
-    # The function reads every date and time value in the given columns and concats them. Then it is formated to a string in iso8605 format.
+    # The function reads every date and time value in the given columns and concat them. Then it is formatted to a string in iso8605 format.
     # Returns a list of datetime strings in iso8605 format
     @staticmethod
     def get_datetime_strings_from_columns(dataset, date_col_name, time_col_name, formating, include_milliseconds):
@@ -179,10 +178,9 @@ class TableUtility:
                 return False 
         
          return True
-             
     
-    # Detects wheter it is DatetimeFormat.ISO_DATETIME or DatetimeFormat.DE_DATETIME_SEPARATE format.
-    # Returns the detected format if the format is not known it returns DatetimeFormat.UNSUPPORTED
+    # Detects whether it is DatetimeFormat.ISO_DATETIME or DatetimeFormat.DE_DATETIME_SEPARATE format.
+    # Returns the detected format if the format is known otherwise it returns DatetimeFormat.UNSUPPORTED
     @staticmethod
     def detect_time_format(dataset, column_name, *column_names):        
         if TableUtility.are_all_column_names_in_table(dataset, column_name):
@@ -224,7 +222,6 @@ class TableUtility:
         new_table = dataset.transform(new_domain)
         
         return new_table
-    
     
     
 if __name__ == "__main__":
