@@ -228,7 +228,6 @@ if __name__ == "__main__":
     from AnyQt.QtWidgets import QApplication
     from Orange.widgets.utils.widgetpreview import WidgetPreview  # since Orange 3.20.0
     
-    # table = Table("iris")
     table = Table("HOA_ADMIN_HOA_DRUCK.csv")
     
     a = QApplication([])
