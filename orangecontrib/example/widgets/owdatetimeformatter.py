@@ -116,25 +116,25 @@ class DatetimeFormatter(OWWidget):
         
         
 class TableUtility:
-    # The function reads every date and time value in the given columns and concat them. Then it is formatted to a string in iso8605 format.
-    # Returns a list of datetime strings in iso8605 format
+    # The function reads every date and time value in the given columns and concat them. Then it is formatted to a string in iso8601 format.
+    # Returns a list of datetime strings in iso8601 format
     @staticmethod
     def get_datetime_strings_from_columns(dataset, date_col_name, time_col_name, formating, include_milliseconds):
         strings = []
         
         for row in dataset:
-            strings.append(TableUtility.datetime_string_to_iso8605(f'{row[date_col_name]}' + " " + f'{row[time_col_name]}', formating, include_milliseconds))
+            strings.append(TableUtility.datetime_string_to_iso8601(f'{row[date_col_name]}' + " " + f'{row[time_col_name]}', formating, include_milliseconds))
             
         return strings
     
-    # The function reads every datetime value in the given column and formats it to a string in iso8605 format 
-    # Returns a list of datetime strings in iso8605 format
+    # The function reads every datetime value in the given column and formats it to a string in iso8601 format 
+    # Returns a list of datetime strings in iso8601 format
     @staticmethod
     def get_datetime_strings_from_single_column(dataset, datetime_col_name, formating):
         strings = []
         
         for row in dataset:
-            strings.append(TableUtility.datetime_string_to_iso8605(f'{row[datetime_col_name]}', formating, False))
+            strings.append(TableUtility.datetime_string_to_iso8601(f'{row[datetime_col_name]}', formating, False))
 
         return strings
     
@@ -152,7 +152,7 @@ class TableUtility:
         return False
     
     @staticmethod
-    def datetime_string_to_iso8605(time_string, formating, include_milliseconds):
+    def datetime_string_to_iso8601(time_string, formating, include_milliseconds):
         dt = datetime.strptime(time_string, formating)
 
         if(include_milliseconds == False):
