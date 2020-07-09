@@ -11,6 +11,13 @@ import matplotlib.dates as mdates
 
 from AnyQt.QtCore import Qt
 
+# Todo 
+# Weitere Achsen können mit dem Dictionary des Objekts hinzugefügt werden. 
+# self.__dict__[attribute_name] = value 
+# self.__dict__[attribute_name] = None // entfernen 
+
+
+
 class OWEasyMatplot(OWWidget):
     name = "Easymatplot-test"
     description = "A widget for easy plots with matplotlib"
@@ -37,9 +44,9 @@ class OWEasyMatplot(OWWidget):
         
         common_options = dict(labelWidth=50, orientation=Qt.Horizontal, sendSelectedValue=True, contentsLength=14)
         
-        # self.__dict__[...]
-        
+
         self.attr_box = gui.vBox(self.controlArea, True)
+        
         self.attr_x = None
         self.attr_y = None
         
@@ -47,11 +54,25 @@ class OWEasyMatplot(OWWidget):
         self.x_model = DomainModel(dmod.MIXED, valid_types=TimeVariable)
         self.y_model = DomainModel(dmod.MIXED, valid_types=ContinuousVariable)
         
+        self.cb_attr_x = gui.comboBox(self.attr_box, self, "attr_x", label="Axis x:", callback=self.set_attr_x_from_combo, model=self.x_model, **common_options, searchable = True)
         self.axis_box = gui.vBox(self.attr_box, True)
-        self.cb_attr_x = gui.comboBox(self.axis_box, self, "attr_x", label="Axis x:", callback=self.set_attr_x_from_combo, model=self.x_model, **common_options, searchable = True)
         self.cb_attr_y = gui.comboBox(self.axis_box, self, "attr_y", label="Axis y:", callback=self.set_attr_y_from_combo, model=self.y_model, **common_options, searchable = True)
         
+        self.axis_h_box = gui.hBox(self.axis_box, True)
+        self.b_attr_remove = gui.button(self.axis_h_box, self, label="Remove", callback=self.set_attr_y_from_combo)
+        self.b_attr_edit = gui.button(self.axis_h_box, self, label="Edit", callback=self.set_attr_y_from_combo)
+        
+        self.cb_attr_y = gui.comboBox(self.axis_box, self, "attr_y", label="Axis y:", callback=self.set_attr_y_from_combo, model=self.y_model, **common_options, searchable = True)
+        
+        self.axis_h_box = gui.hBox(self.axis_box, True)
+        self.b_attr_remove = gui.button(self.axis_h_box, self, label="Remove", callback=self.set_attr_y_from_combo)
+        self.b_attr_edit = gui.button(self.axis_h_box, self, label="Edit", callback=self.set_attr_y_from_combo)
+        
+        self.b_attr_edit = gui.button(self.axis_box, self, label="Add y", callback=self.set_attr_y_from_combo)
+        
         self.graph = MatplotlibWidget()
+        gui.rubber(self.attr_box)
+        self.new_plot = gui.button(self.controlArea, self, label="Add plot", callback=self.set_attr_y_from_combo)
         
         box = gui.vBox(self.mainArea, True, margin=0)
         box.layout().addWidget(self.graph)
@@ -103,31 +124,10 @@ class OWEasyMatplot(OWWidget):
         self.subplot.xaxis.set_major_formatter(myFmt)
         self.subplot.plot(x, y)
         self.__commit()
-        
-    def __setup_plot(self):
-        if self.subplot is not None:
-            self.subplot.clear()
-            yLabel = ""
-            
-            if self.selected is not None:
-                print(self.selected)
-                self.subplot.plot(self.selected, label=self.attr_y.name)
-                ylabel = self.attr_y.name;
-                
-            x_names = []
-            
-            for row in self.__input_data:
-                x_names.append(dateutil.parser.parse(f'{row["DatumUhrzeit"]}'))
-                print(dateutil.parser.parse(f'{row["DatumUhrzeit"]}'))
-                
-            for i in self.selected:
-                print(i)
-            
-           
-            
 
-  
+
     def __commit(self):
+        pass
         self.subplot.legend()
         self.graph.draw()
         
