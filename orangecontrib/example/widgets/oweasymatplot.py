@@ -93,7 +93,15 @@ class OWEasyMatplot(OWWidget):
     def __update_plot(self):
         self.selected = self.__input_data[:, self.attr_y] # Wie, wenn mehrere attr_y?
         
-        self.__setup_plot()
+
+        x = [datetime.datetime.now() + datetime.timedelta(hours=i) for i in range(12)]
+        y = [i+random.gauss(0,1) for i,_ in enumerate(x)]
+        
+        self.subplot.plot(x, y)
+        self.subplot.autofmt_xdate()
+        
+        
+        # self.__setup_plot()
         self.__commit()
         
     def __setup_plot(self):
@@ -115,10 +123,9 @@ class OWEasyMatplot(OWWidget):
             for i in self.selected:
                 print(i)
             
-            x = [datetime.datetime.now() + datetime.timedelta(hours=i) for i in range(12)]
-            y = [i+random.gauss(0,1) for i,_ in enumerate(x)]
+           
             
-            self.subplot.set_xtick()
+
   
     def __commit(self):
         self.subplot.legend()
