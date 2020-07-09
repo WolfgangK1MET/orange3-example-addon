@@ -14,7 +14,7 @@ WIDGET_ICON = "icons/mywidget.svg"
 class DatetimeFormat(IntEnum):
     UNSUPPORTED = 1
     ISO_DATETIME = 2
-    DE_DATETIME_SEPARATE = 3
+    DE_DATETIME_SEPARATE = 4
     
 class DatetimeFormatter(OWWidget):
     name = WIDGET_NAME
@@ -37,18 +37,18 @@ class DatetimeFormatter(OWWidget):
     def __init__(self):
         super().__init__()
         
-        self.input_dataset = None 
+        self.__input_dataset = None 
         self.include_milliseconds = False 
         
-        self.options_box = gui.widgetBox(self.controlArea, "Options")
-        self.cb_include_milliseconds = gui.checkBox(self.options_box, self, "include_milliseconds", "Include Milliseconds", callback = self.reload_data)
-        self.cb_include_milliseconds.setDisabled(True)
+        self.__options_box = gui.widgetBox(self.controlArea, "Options")
+        self.__cb_include_milliseconds = gui.checkBox(self.__options_box, self, "include_milliseconds", "Include Milliseconds", callback = self.reload_data)
+        self.__cb_include_milliseconds.setDisabled(True)
         
         self.Warning.empty_data(shown = True)
         
     @Inputs.input_data 
     def set_input_data(self, dataset):
-        self.input_dataset = dataset 
+        self.__input_dataset = dataset 
         
         # Turn of all errors and warnings when new input is set 
         self.Error.no_fitting_columns_found(shown = False)
@@ -56,51 +56,51 @@ class DatetimeFormatter(OWWidget):
         self.Warning.empty_data(shown = dataset is None)
         
         # Disable milliseconds checkbox because it is not sure if it is useable
-        self.cb_include_milliseconds.setDisabled(True)
+        self.__cb_include_milliseconds.setDisabled(True)
         
         if dataset is not None:
-            # set_output_data returns true when no error occured
-            if self.set_output_data() == True:
+            # _set_output_data returns true when no error occured
+            if self._set_output_data() == True:
                 return
         
-        # Dataset was none or set_output_data threw an error
-        self.input_dataset = None
-        self.Outputs.output_data.send(self.input_dataset)
+        # Dataset was none or _set_output_data threw an error
+        self.__input_dataset = None
+        self.Outputs.output_data.send(self.__input_dataset)
             
     # Returns a boolean that indicates whether the function ran without errors 
-    def set_output_data(self):
-        detected_format = TableUtility.detect_time_format(self.input_dataset, "ISOZEIT", "Datum", "Uhrzeit")
-        is_meta = TableUtility.is_any_attribute_meta(self.input_dataset, "ISOZEIT", "Datum", "Uhrzeit")
+    def _set_output_data(self):
+        detected_format = TableUtility.detect_time_format(self.__input_dataset, "ISOZEIT", "Datum", "Uhrzeit")
+        is_meta = TableUtility.is_any_attribute_meta(self.__input_dataset, "ISOZEIT", "Datum", "Uhrzeit")
         domain_metas = domain_attributes = None
         time_strings = []
         handled = False
         
         if detected_format == DatetimeFormat.ISO_DATETIME:
-            self.cb_include_milliseconds.setDisabled(True)
+            self.__cb_include_milliseconds.setDisabled(True)
             try:
-                time_strings = TableUtility.get_datetime_strings_from_single_column(self.input_dataset, "ISOZEIT", "%d.%m.%Y %H:%M:%S")
+                time_strings = TableUtility.get_datetime_strings_from_single_column(self.__input_dataset, "ISOZEIT", "%d.%m.%Y %H:%M:%S")
             except:
                 self.Error.unsupported_date_format(shown = True)
                 return handled
             
-            domain_attributes, domain_metas = TableUtility.domain_extract_columns(self.input_dataset.domain, "ISOZEIT")
+            domain_attributes, domain_metas = TableUtility.domain_extract_columns(self.__input_dataset.domain, "ISOZEIT")
             
         elif detected_format == DatetimeFormat.DE_DATETIME_SEPARATE:
             try:
-                time_strings = TableUtility.get_datetime_strings_from_columns(self.input_dataset, "Datum", "Uhrzeit", "%d.%m.%Y %H:%M:%S,%f", self.include_milliseconds)
+                time_strings = TableUtility.get_datetime_strings_from_columns(self.__input_dataset, "Datum", "Uhrzeit", "%d.%m.%Y %H:%M:%S,%f", self.include_milliseconds)
             except:
                  self.Error.unsupported_date_format(shown = True)
                  return handled
              
-            self.cb_include_milliseconds.setDisabled(False)
-            domain_attributes, domain_metas = TableUtility.domain_extract_columns(self.input_dataset.domain, "Uhrzeit", "Datum")
+            self.__cb_include_milliseconds.setDisabled(False)
+            domain_attributes, domain_metas = TableUtility.domain_extract_columns(self.__input_dataset.domain, "Uhrzeit", "Datum")
             
         else:
             self.Error.no_fitting_columns_found(shown = True)
             return handled
         
         TableUtility.insert_time_col_into_domain(domain_metas, domain_attributes, "DatumUhrzeit", is_meta)
-        new_table = TableUtility.generate_new_table(self.input_dataset, domain_attributes, domain_metas)
+        new_table = TableUtility.generate_new_table(self.__input_dataset, domain_attributes, domain_metas)
             
         for index, row in enumerate(new_table):
             row["DatumUhrzeit"] = time_strings[index]
@@ -112,7 +112,7 @@ class DatetimeFormatter(OWWidget):
         
     # Callback function for the checkbox cb_include_milliseconds
     def reload_data(self):
-        self.set_input_data(self.input_dataset)
+        self.set_input_data(self.__input_dataset)
         
         
 class TableUtility:
