@@ -2,14 +2,12 @@ import Orange
 
 from Orange.data import Table, ContinuousVariable
 from Orange.widgets.widget import OWWidget, Input, Output, Msg
-from Orange.data import TimeVariable, Domain
+from Orange.data import TimeVariable
 from Orange.widgets import gui
 from Orange.widgets.utils.itemmodels import DomainModel
 from pyqtgraph.widgets.MatplotlibWidget import MatplotlibWidget
 import dateutil.parser
-import matplotlib
-import datetime
-import random
+import matplotlib.dates as mdates
 
 from AnyQt.QtCore import Qt
 
@@ -82,6 +80,7 @@ class OWEasyMatplot(OWWidget):
             self.y_model.set_domain(dataset.domain)
             self.attr_x = time_var 
             self.attr_y = self.y_model[1] # check if there is one ... // method needed which get first number type ...
+            self.__update_plot()
             
         self.Outputs.selected.send(self.__input_data)
     
@@ -92,16 +91,17 @@ class OWEasyMatplot(OWWidget):
     
     def __update_plot(self):
         self.selected = self.__input_data[:, self.attr_y] # Wie, wenn mehrere attr_y?
-        
+        self.subplot.clear()
 
-        x = [datetime.datetime.now() + datetime.timedelta(hours=i) for i in range(12)]
-        y = [i+random.gauss(0,1) for i,_ in enumerate(x)]
+        x = []
+        y = self.selected
         
+        for row in self.__input_data:
+            x.append(dateutil.parser.parse(f'{row["DatumUhrzeit"]}'))
+        
+        myFmt = mdates.DateFormatter('%H:%M:%S')
+        self.subplot.xaxis.set_major_formatter(myFmt)
         self.subplot.plot(x, y)
-        self.subplot.autofmt_xdate()
-        
-        
-        # self.__setup_plot()
         self.__commit()
         
     def __setup_plot(self):
