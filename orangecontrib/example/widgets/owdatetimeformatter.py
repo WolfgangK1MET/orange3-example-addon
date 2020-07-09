@@ -19,9 +19,8 @@ import Orange.data
 from os.path import join, dirname
 Orange.data.table.dataset_dirs.insert(0, join(dirname(__file__), 'datasets'))
 
-from timeseries import Timeseries
 
-WIDGET_NAME = "DatetimeFormatter"
+WIDGET_NAME = "Datetime_Formatter"
 WIDGET_ICON = "icons/mywidget.svg"
 
 class DatetimeFormat(IntEnum):
@@ -38,7 +37,7 @@ class DatetimeFormatter(OWWidget):
         input_data = Input("Data", Orange.data.Table)
         
     class Outputs:
-        output_data = Output("Table", Orange.data.Table)
+        output_data = Output("Data", Orange.data.Table)
         
     class Error(OWWidget.Error):
         unsupported_date_format = Msg("The given date format is not supported.")
@@ -117,8 +116,7 @@ class DatetimeFormatter(OWWidget):
             
         for index, row in enumerate(new_table):
             row["DatumUhrzeit"] = time_strings[index]
-        
-        timeseries = Timeseries.from_data_table(new_table)
+
         self.Outputs.output_data.send(new_table)
         handled = True
         
