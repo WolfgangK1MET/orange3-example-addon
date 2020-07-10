@@ -7,19 +7,6 @@ from Orange.data import Table, TimeVariable, Domain
 from Orange.widgets.widget import OWWidget, Input, Output, Msg
 from Orange.widgets import gui
 
-# from https://github.com/biolab/orange3-timeseries/blob/master/orangecontrib/timeseries/timeseries.py
-
-import itertools
-from more_itertools import unique_everseen
-import numpy as np
-
-from Orange.data import Table, Domain, TimeVariable, ContinuousVariable
-
-import Orange.data
-from os.path import join, dirname
-Orange.data.table.dataset_dirs.insert(0, join(dirname(__file__), 'datasets'))
-
-
 WIDGET_NAME = "Datetime_Formatter"
 WIDGET_ICON = "icons/mywidget.svg"
 
