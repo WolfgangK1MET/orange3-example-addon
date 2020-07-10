@@ -24,7 +24,7 @@ class Second(QtGui.QMainWindow):
         super(Second, self).__init__(parent)
 
 class OWEasyMatplot(OWWidget):
-    name = "Easymatplot-test"
+    name = "Matplot - test"
     description = "A widget for easy plots with matplotlib"
     icon = "icons/oweasyplot.svg"
     want_main_area = True
@@ -63,6 +63,7 @@ class OWEasyMatplot(OWWidget):
         self.x_model = DomainModel(dmod.MIXED, valid_types=TimeVariable)
         self.y_model = DomainModel(dmod.MIXED, valid_types=ContinuousVariable)
         
+        # attr_x wird leider immer benötigt, da comboBox ansonsten das Argument 'value' vermisst.
         self.cb_attr_x = gui.comboBox(self.attr_box, self, "attr_x", label="Axis x:", callback=self.set_attr_x_from_combo, model=self.x_model, **common_options, searchable = True)
         self.axis_box = gui.vBox(self.attr_box, True)
         self.cb_attr_y = gui.comboBox(self.axis_box, self, "attr_y", label="Axis y:", callback=self.set_attr_y_from_combo, model=self.y_model, **common_options, searchable = True)
