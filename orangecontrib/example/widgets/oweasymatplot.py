@@ -10,13 +10,18 @@ import dateutil.parser
 import matplotlib.dates as mdates
 
 from AnyQt.QtCore import Qt
+from PyQt4 import QtGui
+
+
 
 # Todo 
 # Weitere Achsen können mit dem Dictionary des Objekts hinzugefügt werden. 
 # self.__dict__[attribute_name] = value 
 # self.__dict__[attribute_name] = None // entfernen 
 
-
+class Second(QtGui.QMainWindow):
+    def __init__(self, parent=None):
+        super(Second, self).__init__(parent)
 
 class OWEasyMatplot(OWWidget):
     name = "Easymatplot-test"
@@ -49,6 +54,10 @@ class OWEasyMatplot(OWWidget):
         
         self.attr_x = None
         self.attr_y = None
+        
+        # How to create second window 
+        # self.second_window = Second(self)
+        # self.second_window.show()
         
         dmod = DomainModel
         self.x_model = DomainModel(dmod.MIXED, valid_types=TimeVariable)
