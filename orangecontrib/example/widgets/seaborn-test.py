@@ -23,10 +23,24 @@ import time
 from matplotlib.backends.qt_compat import QtCore, QtWidgets, is_pyqt5
 import numpy as np
 
+from PyQt5 import QtCore, QtGui, QtWidgets
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.figure import Figure
+import sys
+import seaborn as sns
+
+tips = sns.load_dataset("tips")
+
+
+def seabornplot():
+    g = sns.FacetGrid(tips, col="sex", hue="time", palette="Set1",hue_order=["Dinner", "Lunch"])
+    g.map(plt.scatter, "total_bill", "tip", edgecolor="w")
+    return g.fig
 
 
 class OWSeabornTest(OWWidget,QtWidgets.QMainWindow):
-    name = "Seaborn Test"
+    name = "Matplot - test"
+    description = "A widget for easy plots with matplotlib"
     icon = "icons/oweasyplot.svg"
     want_main_area = True
     
@@ -44,38 +58,55 @@ class OWSeabornTest(OWWidget,QtWidgets.QMainWindow):
         
     def __init__(self):
         super().__init__()
-        self._main = QtWidgets.QWidget()
-        self.setCentralWidget(self._main)
-        layout = QtWidgets.QVBoxLayout(self._main)
+        self.main_widget = QtGui.QWidget(self)
 
-        static_canvas = FigureCanvas(Figure(figsize=(5, 3)))
-        layout.addWidget(static_canvas)
-        self.addToolBar(NavigationToolbar(static_canvas, self))
+        self.graph = Figure()
+        self.ax1 = self.graph.add_subplot(121)
+        self.ax2 = self.graph.add_subplot(122, sharex=self.ax1, sharey=self.ax1)
+        self.axes=[self.ax1, self.ax2]
+        self.graph = FigureCanvas(self.graph)
 
-        dynamic_canvas = FigureCanvas(Figure(figsize=(5, 3)))
-        layout.addWidget(dynamic_canvas)
-        self.addToolBar(QtCore.Qt.BottomToolBarArea,
-                        NavigationToolbar(dynamic_canvas, self))
+        self.graph.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+        self.graph.updateGeometry()
+        
+        self.dropdown1 = QtGui.QComboBox()
+        self.dropdown1.addItems(["sex", "time", "smoker"])
+        self.dropdown2 = QtGui.QComboBox()
+        self.dropdown2.addItems(["sex", "time", "smoker", "day"])
+        self.dropdown2.setCurrentIndex(2)
+        
+        self.dropdown1.currentIndexChanged.connect(self.update)
+        self.dropdown2.currentIndexChanged.connect(self.update)
 
-        self._static_ax = static_canvas.figure.subplots()
-        t = np.linspace(0, 10, 501)
-        self._static_ax.plot(t, np.tan(t), ".")
+        self.label = QtGui.QLabel("A plot:")
 
-        self._dynamic_ax = dynamic_canvas.figure.subplots()
-        self._timer = dynamic_canvas.new_timer(
-            100, [(self._update_canvas, (), {})])
-        self._timer.start()
 
-    def _update_canvas(self):
-        self._dynamic_ax.clear()
-        t = np.linspace(0, 10, 101)
-        # Shift the sinusoid as a function of time.
-        self._dynamic_ax.plot(t, np.sin(t + time.time()))
-        self._dynamic_ax.figure.canvas.draw()
+        self.show()
+        self.update()
 
     @Inputs.data
     def set_input_data(self, data):
         self.__input_data = data
+        
+    def update(self):
+
+        colors=["b", "r", "g", "y", "k", "c"]
+        self.ax1.clear()
+        self.ax2.clear()
+        cat1 = self.dropdown1.currentText()
+        cat2 = self.dropdown2.currentText()
+        print (cat1, cat2)
+
+        for i, value in enumerate(tips[cat1].unique()):
+            print ("value ", value)
+            df = tips.loc[tips[cat1] == value]
+            self.axes[i].set_title(cat1 + ": " + value)
+            for j, value2 in enumerate(df[cat2].unique()):
+                print ("value2 ", value2)
+                df.loc[ tips[cat2] == value2 ].plot(kind="scatter", x="total_bill", y="tip", 
+                                                ax=self.axes[i], c=colors[j], label=value2)
+        self.axes[i].legend()   
+        self.graph.canvas.draw_idle()
         
 
         
