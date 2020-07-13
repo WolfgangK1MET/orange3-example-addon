@@ -28,24 +28,23 @@ class Second(QtGui.QMainWindow):
         super(Second, self).__init__(parent)
 
 class YAxisGraphics:
-    def __init__(self, box, model, number, **common_options):
+    def __init__(self, box, data):
         self.box = box
-        self.model = model
-        self.attr_y = None
-        self.number = number
+        self.data = data
 
-        self.cb_attr_y = gui.comboBox(self.box, self, "attr_y", label="Axis y:", callback=self.set_attr_y_from_combo, model=model, **common_options, searchable=True)
+        self.cb_attr_y = gui.comboBox(self.box, self, "attr_y", label="Axis y:", callback=self.on_attr_y_change, model=self.data.model, **self.data.common_options, searchable=True)
         self.axis_h_box = gui.hBox(self.box, True)
         self.b_attr_remove = gui.button(self.axis_h_box, self, label="Remove", callback=self.remove_y_axis)
         self.b_attr_edit = gui.button(self.axis_h_box, self, label="Edit", callback=self.edit_y_axis)
 
 class YAxisData:
-    pass
+    def __init__(self, model, number, **common_options):
+        self.model = model
+        self.number = number
+        self.common_options = common_options
 
-class YAxis:
-    def __init__(self, number):
-        self.data = YAxisData()
-        self.graphics = YAxisGraphics()
+    def store_settings(self):
+        print("store settings ... NOT IMPLEMENTED")
 
 class OWEasyMatplot(OWWidget):
     name = "Matplot - test"
