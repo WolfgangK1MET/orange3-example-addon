@@ -19,9 +19,9 @@ def onclick(event):
     print('%s click: button=%d, x=%d, y=%d, xdata=%f, ydata=%f' %('double' if event.dblclick else 'single', event.button, event.x, event.y, event.xdata, event.ydata))
 
 # To create a second window, maybe there is another way
-class Second(QtGui.QMainWindow):
-    def __init__(self, parent=None):
-        super(Second, self).__init__(parent)
+# class Second(QtGui.QMainWindow):
+#     def __init__(self, parent=None):
+#         super(Second, self).__init__(parent)
 
 class OWEasyMatplot(OWWidget):
     name = "Matplot - test"
@@ -110,9 +110,9 @@ class OWEasyMatplot(OWWidget):
             self.y_model.set_domain(dataset.domain)
             
             # TODO: Throw exception if there is no datetime or/and number type
-            self.attr_x = time_var 
-            self.attr_y0 = self.y_model[1] # TODO: check if there is one ... // method needed which get first number type ...
-            self.attr_y1 = self.y_model[2] # TODO: check if there is one ... // method needed which get first number type ...
+            self.attr_x = self.y_model[0]
+            self.attr_y0 = self.y_model[1]
+            self.attr_y1 = self.y_model[2]
             
             self.cid = self.graph.canvas.mpl_connect('draw_event', onclick)
             self.__update_plot()
@@ -120,10 +120,11 @@ class OWEasyMatplot(OWWidget):
         self.Outputs.selected.send(self.__input_data)
     
     def __detect_time_variable(self):
-        time_var = TableUtility.get_first_time_variable(self.__input_data)
+        time_var = TableUtility.get_first_of_type(TimeVariable, self.__input_data)
         
         return time_var
-    
+
+    # Is called whenever the plot should update
     def __update_plot(self):
         self.subplot.clear()
         self.ax1.clear()
@@ -151,6 +152,7 @@ class OWEasyMatplot(OWWidget):
         self.graph.getFigure().tight_layout()
         self.__commit()
 
+    # Update the graphic output of the plot
     def __commit(self):
         self.subplot.legend(self.plots, self.labels, loc = 0)
 
@@ -160,9 +162,9 @@ class OWEasyMatplot(OWWidget):
         
 class TableUtility:
     @staticmethod
-    def get_first_time_variable(dataset):
+    def get_first_of_type(type, dataset):
         for attribute in list(dataset.domain.metas) + list(dataset.domain.attributes):
-            if type(attribute) == TimeVariable:
+            if type(attribute) == type:
                 return attribute
             
         return None
