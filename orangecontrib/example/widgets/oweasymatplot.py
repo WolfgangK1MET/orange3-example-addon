@@ -8,6 +8,7 @@ from Orange.widgets.utils.itemmodels import DomainModel
 from pyqtgraph.widgets.MatplotlibWidget import MatplotlibWidget
 import dateutil.parser
 import matplotlib.dates as mdates
+from mpldatacursor import datacursor
 
 from AnyQt.QtCore import Qt
 from PyQt5 import QtGui, QtCore
@@ -105,9 +106,6 @@ class OWEasyMatplot(OWWidget):
         self.axis_h_box1 = gui.hBox(self.axis_box, True)
         self.b_attr_remove1 = gui.button(self.axis_h_box1, self, label="Remove", callback=self.set_attr_y_from_combo)
         self.b_attr_edit1 = gui.button(self.axis_h_box1, self, label="Edit", callback=self.set_attr_y_from_combo)
-
-        self.axis_h_box1.close()
-        self.axis_h_box1.
         
         self.graph = MatplotlibWidget()
         gui.rubber(self.attr_box)
