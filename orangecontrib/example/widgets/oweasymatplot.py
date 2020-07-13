@@ -124,7 +124,6 @@ class OWEasyMatplot(OWWidget):
         return time_var
     
     def __update_plot(self):
-        print("Udpate")
         self.subplot.clear()
         self.ax1.clear()
         
@@ -149,7 +148,8 @@ class OWEasyMatplot(OWWidget):
         self.__commit()
 
     def __commit(self):
-        self.subplot.legend()
+        #self.subplot.legend()
+        #self.ax1.legend()
         self.graph.draw()
         
         self.Outputs.selected.send(self.selected)
