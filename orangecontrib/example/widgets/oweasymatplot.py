@@ -109,10 +109,10 @@ class OWEasyMatplot(OWWidget):
             self.x_model.set_domain(dataset.domain)
             self.y_model.set_domain(dataset.domain)
             
-            # Throw exception if there is no datetime or/and number type
+            # TODO: Throw exception if there is no datetime or/and number type
             self.attr_x = time_var 
-            self.attr_y0 = self.y_model[1] # check if there is one ... // method needed which get first number type ...
-            self.attr_y1 = self.y_model[2] # check if there is one ... // method needed which get first number type ...
+            self.attr_y0 = self.y_model[1] # TODO: check if there is one ... // method needed which get first number type ...
+            self.attr_y1 = self.y_model[2] # TODO: check if there is one ... // method needed which get first number type ...
             
             self.__update_plot()
             
@@ -141,8 +141,13 @@ class OWEasyMatplot(OWWidget):
         self.subplot.xaxis.set_major_formatter(myFmt)
         self.ax1.xaxis.set_major_formatter(myFmt)
         
-        self.subplot.plot(x, y, label = self.attr_y0.name, color = "r")
-        self.ax1.plot(x, self.__input_data[:, self.attr_y1], label = self.attr_y1.name, color = "b")
+        plot0 = self.subplot.plot(x, y, label = self.attr_y0.name, color = "r")
+        plot1 = self.ax1.plot(x, self.__input_data[:, self.attr_y1], label = self.attr_y1.name, color = "b")
+
+        plots = plot0 + plot1
+        labels = [self.attr_y0.name, self.attr_y1.name]
+        
+        self.subplot.legend(plots, labels, loc=0)
 
         self.graph.getFigure().tight_layout()
         self.__commit()
