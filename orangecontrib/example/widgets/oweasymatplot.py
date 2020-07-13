@@ -19,6 +19,10 @@ from PyQt4 import QtGui
 # self.__dict__[attribute_name] = value 
 # self.__dict__[attribute_name] = None // entfernen 
 
+def onclick(event):
+    print('%s click: button=%d, x=%d, y=%d, xdata=%f, ydata=%f' %('double' if event.dblclick else 'single', event.button, event.x, event.y, event.xdata, event.ydata))
+
+# To create a second window, maybe there is another way
 class Second(QtGui.QMainWindow):
     def __init__(self, parent=None):
         super(Second, self).__init__(parent)
@@ -114,6 +118,8 @@ class OWEasyMatplot(OWWidget):
             self.attr_y0 = self.y_model[1] # TODO: check if there is one ... // method needed which get first number type ...
             self.attr_y1 = self.y_model[2] # TODO: check if there is one ... // method needed which get first number type ...
             
+            self.cid = self.graph.canvas.mpl_connect('draw_event', onclick)
+            
             self.__update_plot()
             
         self.Outputs.selected.send(self.__input_data)
@@ -144,20 +150,18 @@ class OWEasyMatplot(OWWidget):
         plot0 = self.subplot.plot(x, y, label = self.attr_y0.name, color = "r")
         plot1 = self.ax1.plot(x, self.__input_data[:, self.attr_y1], label = self.attr_y1.name, color = "b")
 
-        plots = plot0 + plot1
-        labels = [self.attr_y0.name, self.attr_y1.name]
-        
-        self.subplot.legend(plots, labels, loc=0)
+        self.plots = plot0 + plot1
+        self.labels = [self.attr_y0.name, self.attr_y1.name]
 
         self.graph.getFigure().tight_layout()
         self.__commit()
 
     def __commit(self):
-        #self.subplot.legend()
-        #self.ax1.legend()
+        self.subplot.legend(self.plots, self.labels, loc = 0)
+
         self.graph.draw()
-        
         self.Outputs.selected.send(self.selected)
+        
         
 class TableUtility:
     @staticmethod
