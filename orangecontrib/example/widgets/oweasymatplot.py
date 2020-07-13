@@ -10,15 +10,11 @@ import dateutil.parser
 import matplotlib.dates as mdates
 
 from AnyQt.QtCore import Qt
-from PyQt4 import QtGui
 
-
-
-# Todo 
-# Weitere Achsen können mit dem Dictionary des Objekts hinzugefügt werden. 
-# self.__dict__[attribute_name] = value 
-# self.__dict__[attribute_name] = None // entfernen 
-
+# Todo
+# Weitere Achsen können mit dem Dictionary des Objekts hinzugefügt werden.
+# self.__dict__[attribute_name] = value
+# self.__dict__[attribute_name] = None // entfernen
 def onclick(event):
     print('%s click: button=%d, x=%d, y=%d, xdata=%f, ydata=%f' %('double' if event.dblclick else 'single', event.button, event.x, event.y, event.xdata, event.ydata))
 
@@ -105,7 +101,7 @@ class OWEasyMatplot(OWWidget):
     def set_data(self, dataset):
         self.__input_data = dataset
         self.Warning.empty_data(shown = True)
-        
+
         if dataset is not None:
             self.Warning.empty_data(shown = False)
             time_var = self.__detect_time_variable()
@@ -119,7 +115,6 @@ class OWEasyMatplot(OWWidget):
             self.attr_y1 = self.y_model[2] # TODO: check if there is one ... // method needed which get first number type ...
             
             self.cid = self.graph.canvas.mpl_connect('draw_event', onclick)
-            
             self.__update_plot()
             
         self.Outputs.selected.send(self.__input_data)
