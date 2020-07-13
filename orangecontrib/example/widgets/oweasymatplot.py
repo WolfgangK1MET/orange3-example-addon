@@ -110,7 +110,7 @@ class OWEasyMatplot(OWWidget):
             self.y_model.set_domain(dataset.domain)
             
             # TODO: Throw exception if there is no datetime or/and number type
-            self.attr_x = self.y_model[0]
+            self.attr_x = time_var
             self.attr_y0 = self.y_model[1]
             self.attr_y1 = self.y_model[2]
             
@@ -120,7 +120,7 @@ class OWEasyMatplot(OWWidget):
         self.Outputs.selected.send(self.__input_data)
     
     def __detect_time_variable(self):
-        time_var = TableUtility.get_first_of_type(TimeVariable, self.__input_data)
+        time_var = TableUtility.get_first_time_variable(self.__input_data)
         
         return time_var
 
@@ -162,13 +162,20 @@ class OWEasyMatplot(OWWidget):
         
 class TableUtility:
     @staticmethod
-    def get_first_of_type(type, dataset):
+    def get_first_time_variable(dataset):
         for attribute in list(dataset.domain.metas) + list(dataset.domain.attributes):
-            if type(attribute) == type:
+            if type(attribute) == TimeVariable:
                 return attribute
             
         return None
-        
+
+    @staticmethod
+    def get_first_continuous_variable(dataset):
+        for attribute in list(dataset.domain.metas) + list(dataset.domain.attributes):
+            if type(attribute) == ContinuousVariable and type(attribute) != TimeVariable:
+                return attribute
+
+        return None
 
 if __name__ == "__main__":
     from AnyQt.QtWidgets import QApplication
