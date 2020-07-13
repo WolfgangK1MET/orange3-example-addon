@@ -53,7 +53,8 @@ class OWEasyMatplot(OWWidget):
         self.attr_box = gui.vBox(self.controlArea, True)
         
         self.attr_x = None
-        self.attr_y = None
+        self.attr_y1 = None
+        self.attr_y2 = None
         
         # How to create second window 
         # self.second_window = Second(self)
@@ -62,32 +63,30 @@ class OWEasyMatplot(OWWidget):
         dmod = DomainModel
         self.x_model = DomainModel(dmod.MIXED, valid_types=TimeVariable)
         self.y_model = DomainModel(dmod.MIXED, valid_types=ContinuousVariable)
+        self.attr_y0 = None
+        self.attr_y1 = None
         
         # attr_x wird leider immer benötigt, da comboBox ansonsten das Argument 'value' vermisst.
         self.cb_attr_x = gui.comboBox(self.attr_box, self, "attr_x", label="Axis x:", callback=self.set_attr_x_from_combo, model=self.x_model, **common_options, searchable = True)
         self.axis_box = gui.vBox(self.attr_box, True)
-        self.cb_attr_y = gui.comboBox(self.axis_box, self, "attr_y", label="Axis y:", callback=self.set_attr_y_from_combo, model=self.y_model, **common_options, searchable = True)
         
-        self.axis_h_box = gui.hBox(self.axis_box, True)
-        self.b_attr_remove = gui.button(self.axis_h_box, self, label="Remove", callback=self.set_attr_y_from_combo)
-        self.b_attr_edit = gui.button(self.axis_h_box, self, label="Edit", callback=self.set_attr_y_from_combo)
+        self.cb_attr_y0 = gui.comboBox(self.axis_box, self, "attr_y0", label="Axis y:", callback=self.set_attr_y_from_combo, model=self.y_model, **common_options, searchable = True)
+        self.axis_h_box0 = gui.hBox(self.axis_box, True)
+        self.b_attr_remove0 = gui.button(self.axis_h_box0, self, label="Remove", callback=self.set_attr_y_from_combo)
+        self.b_attr_edit0 = gui.button(self.axis_h_box0, self, label="Edit", callback=self.set_attr_y_from_combo)
         
-        self.cb_attr_y = gui.comboBox(self.axis_box, self, "attr_y", label="Axis y:", callback=self.set_attr_y_from_combo, model=self.y_model, **common_options, searchable = True)
-        
-        self.axis_h_box = gui.hBox(self.axis_box, True)
-        self.b_attr_remove = gui.button(self.axis_h_box, self, label="Remove", callback=self.set_attr_y_from_combo)
-        self.b_attr_edit = gui.button(self.axis_h_box, self, label="Edit", callback=self.set_attr_y_from_combo)
-        
-        self.b_attr_edit = gui.button(self.axis_box, self, label="Add y", callback=self.set_attr_y_from_combo)
+        self.cb_attr_y1 = gui.comboBox(self.axis_box, self, "attr_y1", label="Axis y:", callback=self.set_attr_y_from_combo, model=self.y_model, **common_options, searchable = True)
+        self.axis_h_box1 = gui.hBox(self.axis_box, True)
+        self.b_attr_remove1 = gui.button(self.axis_h_box1, self, label="Remove", callback=self.set_attr_y_from_combo)
+        self.b_attr_edit1 = gui.button(self.axis_h_box1, self, label="Edit", callback=self.set_attr_y_from_combo)
         
         self.graph = MatplotlibWidget()
         gui.rubber(self.attr_box)
-        self.new_plot = gui.button(self.controlArea, self, label="Add plot", callback=self.set_attr_y_from_combo)
         
         box = gui.vBox(self.mainArea, True, margin=0)
         box.layout().addWidget(self.graph)
         self.subplot = self.graph.getFigure().add_subplot()
-        
+        self.ax1 = self.subplot.twinx()
         self.show()
         
     # Callback function for cb_attr_x
@@ -109,8 +108,12 @@ class OWEasyMatplot(OWWidget):
             
             self.x_model.set_domain(dataset.domain)
             self.y_model.set_domain(dataset.domain)
+            
+            # Throw exception if there is no datetime or/and number type
             self.attr_x = time_var 
-            self.attr_y = self.y_model[1] # check if there is one ... // method needed which get first number type ...
+            self.attr_y0 = self.y_model[1] # check if there is one ... // method needed which get first number type ...
+            self.attr_y1 = self.y_model[2] # check if there is one ... // method needed which get first number type ...
+            
             self.__update_plot()
             
         self.Outputs.selected.send(self.__input_data)
@@ -121,23 +124,31 @@ class OWEasyMatplot(OWWidget):
         return time_var
     
     def __update_plot(self):
-        self.selected = self.__input_data[:, self.attr_y] # Wie, wenn mehrere attr_y?
+        print("Udpate")
         self.subplot.clear()
-
-        x = []
-        y = self.selected
+        self.ax1.clear()
         
+        x = []
         for row in self.__input_data:
             x.append(dateutil.parser.parse(f'{row["DatumUhrzeit"]}'))
-        
+        y = self.selected = self.__input_data[:, self.attr_y0] # Wie, wenn mehrere attr_y?
+
+        self.subplot.set_xlabel(self.attr_x.name)
+        self.subplot.set_ylabel(self.attr_y0.name, color = "r")
+        self.ax1.set_ylabel(self.attr_y1.name, color = "b")
+
+        # Keine Tage werden berücksichtigt, hierfür wäre eine Einstellung sinnvoll
         myFmt = mdates.DateFormatter('%H:%M:%S')
         self.subplot.xaxis.set_major_formatter(myFmt)
-        self.subplot.plot(x, y)
+        self.ax1.xaxis.set_major_formatter(myFmt)
+        
+        self.subplot.plot(x, y, label = self.attr_y0.name, color = "r")
+        self.ax1.plot(x, self.__input_data[:, self.attr_y1], label = self.attr_y1.name, color = "b")
+
+        self.graph.getFigure().tight_layout()
         self.__commit()
 
-
     def __commit(self):
-        pass
         self.subplot.legend()
         self.graph.draw()
         
