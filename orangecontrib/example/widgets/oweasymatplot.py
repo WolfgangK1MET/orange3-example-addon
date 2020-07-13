@@ -10,18 +10,42 @@ import dateutil.parser
 import matplotlib.dates as mdates
 
 from AnyQt.QtCore import Qt
+from PyQt5 import QtGui, QtCore
+import sys
 
 # Todo
 # Weitere Achsen können mit dem Dictionary des Objekts hinzugefügt werden.
 # self.__dict__[attribute_name] = value
 # self.__dict__[attribute_name] = None // entfernen
-def onclick(event):
-    print('%s click: button=%d, x=%d, y=%d, xdata=%f, ydata=%f' %('double' if event.dblclick else 'single', event.button, event.x, event.y, event.xdata, event.ydata))
+
+
+# def onclick(event):
+#     print('%s click: button=%d, x=%d, y=%d, xdata=%f, ydata=%f' %('double' if event.dblclick else 'single', event.button, event.x, event.y, event.xdata, event.ydata))
 
 # To create a second window, maybe there is another way
-# class Second(QtGui.QMainWindow):
-#     def __init__(self, parent=None):
-#         super(Second, self).__init__(parent)
+class Second(QtGui.QMainWindow):
+    def __init__(self, parent=None):
+        super(Second, self).__init__(parent)
+
+class YAxisGraphics:
+    def __init__(self, box, model, number, **common_options):
+        self.box = box
+        self.model = model
+        self.attr_y = None
+        self.number = number
+
+        self.cb_attr_y = gui.comboBox(self.box, self, "attr_y", label="Axis y:", callback=self.set_attr_y_from_combo, model=model, **common_options, searchable=True)
+        self.axis_h_box = gui.hBox(self.box, True)
+        self.b_attr_remove = gui.button(self.axis_h_box, self, label="Remove", callback=self.remove_y_axis)
+        self.b_attr_edit = gui.button(self.axis_h_box, self, label="Edit", callback=self.edit_y_axis)
+
+class YAxisData:
+    pass
+
+class YAxis:
+    def __init__(self, number):
+        self.data = YAxisData()
+        self.graphics = YAxisGraphics()
 
 class OWEasyMatplot(OWWidget):
     name = "Matplot - test"
@@ -51,7 +75,7 @@ class OWEasyMatplot(OWWidget):
         
 
         self.attr_box = gui.vBox(self.controlArea, True)
-        
+
         self.attr_x = None
         self.attr_y1 = None
         self.attr_y2 = None
@@ -65,20 +89,26 @@ class OWEasyMatplot(OWWidget):
         self.y_model = DomainModel(dmod.MIXED, valid_types=ContinuousVariable)
         self.attr_y0 = None
         self.attr_y1 = None
-        
+
+        self.__dict__["edit_y0_axis"] = lambda self: print("Something")
+
         # attr_x wird leider immer benötigt, da comboBox ansonsten das Argument 'value' vermisst.
         self.cb_attr_x = gui.comboBox(self.attr_box, self, "attr_x", label="Axis x:", callback=self.set_attr_x_from_combo, model=self.x_model, **common_options, searchable = True)
         self.axis_box = gui.vBox(self.attr_box, True)
-        
+
+        self.add_y_axis(0)
         self.cb_attr_y0 = gui.comboBox(self.axis_box, self, "attr_y0", label="Axis y:", callback=self.set_attr_y_from_combo, model=self.y_model, **common_options, searchable = True)
         self.axis_h_box0 = gui.hBox(self.axis_box, True)
-        self.b_attr_remove0 = gui.button(self.axis_h_box0, self, label="Remove", callback=self.set_attr_y_from_combo)
-        self.b_attr_edit0 = gui.button(self.axis_h_box0, self, label="Edit", callback=self.set_attr_y_from_combo)
-        
+        self.b_attr_remove0 = gui.button(self.axis_h_box0, self, label="Remove", callback=self.remove_y0_axis)
+        self.b_attr_edit0 = gui.button(self.axis_h_box0, self, label="Edit", callback=self.edit_y0_axis)
+
         self.cb_attr_y1 = gui.comboBox(self.axis_box, self, "attr_y1", label="Axis y:", callback=self.set_attr_y_from_combo, model=self.y_model, **common_options, searchable = True)
         self.axis_h_box1 = gui.hBox(self.axis_box, True)
         self.b_attr_remove1 = gui.button(self.axis_h_box1, self, label="Remove", callback=self.set_attr_y_from_combo)
         self.b_attr_edit1 = gui.button(self.axis_h_box1, self, label="Edit", callback=self.set_attr_y_from_combo)
+
+        self.axis_h_box1.close()
+        self.axis_h_box1.
         
         self.graph = MatplotlibWidget()
         gui.rubber(self.attr_box)
@@ -88,10 +118,23 @@ class OWEasyMatplot(OWWidget):
         self.subplot = self.graph.getFigure().add_subplot()
         self.ax1 = self.subplot.twinx()
         self.show()
-        
+
+    def add_y_axis(self, number):
+        edit_function_name = "edit_y" + str(number) + "_axis"
+        remove_function_name = "remove_y" + str(number) + "_axis"
+
+        self.__dict__[edit_function_name] = lambda: print("pressed edit y0-axis")
+        self.__dict__[remove_function_name] = lambda number: self.remove_y_axis(number)
+
+    def remove_y_axis(self, number):
+        self.axis_h_box1.hide()
+        print("pressed remove y" + str(number*1) + "-axis")
+
     # Callback function for cb_attr_x
     def set_attr_x_from_combo(self):
         self.__update_plot()
+
+
     
     # Callback function for cb_attr_y
     def set_attr_y_from_combo(self):
@@ -111,10 +154,10 @@ class OWEasyMatplot(OWWidget):
             
             # TODO: Throw exception if there is no datetime or/and number type
             self.attr_x = time_var
-            self.attr_y0 = self.y_model[1]
+            self.attr_y0 = TableUtility.get_first_continuous_variable(self.__input_data)
             self.attr_y1 = self.y_model[2]
             
-            self.cid = self.graph.canvas.mpl_connect('draw_event', onclick)
+            # self.cid = self.graph.canvas.mpl_connect('on_click', onclick)
             self.__update_plot()
             
         self.Outputs.selected.send(self.__input_data)
@@ -137,6 +180,9 @@ class OWEasyMatplot(OWWidget):
         self.subplot.set_xlabel(self.attr_x.name)
         self.subplot.set_ylabel(self.attr_y0.name, color = "r")
         self.ax1.set_ylabel(self.attr_y1.name, color = "b")
+        self.ax1.spines["right"].set_position(("axes", 1.15))
+        self.ax1.spines["right"].set_edgecolor("y")
+        # self.ax1.callbacks.connect("ylim_changed", self.__update_plot) Es würde sobald sich ylim ändert, update_plot aufgerufen werden
 
         # Keine Tage werden berücksichtigt, hierfür wäre eine Einstellung sinnvoll
         myFmt = mdates.DateFormatter('%H:%M:%S')
