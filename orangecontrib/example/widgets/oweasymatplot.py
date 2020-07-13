@@ -10,6 +10,8 @@ import dateutil.parser
 import matplotlib.dates as mdates
 from mpldatacursor import datacursor
 
+# Datacursor hinzufügen, um Daten bei der Mausposition anzuzeigen
+
 from AnyQt.QtCore import Qt
 from PyQt5 import QtGui, QtCore
 import sys
