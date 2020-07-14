@@ -17,6 +17,7 @@ class TestQtWindow(OWWidget):
     name = "qt-window-test"
     description = "A widget for easy plots with matplotlib"
     icon = "icons/oweasyplot.svg"
+
     
     def __init__(self):
         self.second_window = Second(self)
