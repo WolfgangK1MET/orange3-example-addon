@@ -40,6 +40,18 @@ class YAxisGraphics:
         self.b_attr_remove = gui.button(self.axis_h_box, self, label="Remove", callback=self.remove_y_axis)
         self.b_attr_edit = gui.button(self.axis_h_box, self, label="Edit", callback=self.edit_y_axis)
 
+def enter_axes(event):
+    print('enter_axes', event.inaxes)
+    event.inaxes.patch.set_facecolor('yellow')
+    event.inaxes.set_ylabel("TEST", color="b")
+    event.canvas.draw()
+
+def leave_axes(event):
+    print('leave_axes', event.inaxes)
+    event.inaxes.patch.set_facecolor('white')
+    event.inaxes.set_ylabel("LEAVE TEST", color="b")
+    event.canvas.draw()
+
 class YAxisData:
     def __init__(self, model, number, **common_options):
         self.model = model
@@ -108,13 +120,19 @@ class OWEasyMatplot(OWWidget):
         self.axis_h_box1 = gui.hBox(self.axis_box, True)
         self.b_attr_remove1 = gui.button(self.axis_h_box1, self, label="Remove", callback=self.set_attr_y_from_combo)
         self.b_attr_edit1 = gui.button(self.axis_h_box1, self, label="Edit", callback=self.set_attr_y_from_combo)
-        
+
         self.graph = MatplotlibWidget()
+
+        self.graph.getFigure().canvas.mpl_connect('axes_enter_event', enter_axes)
+        self.graph.getFigure().canvas.mpl_connect('axes_leave_event', leave_axes)
+
         gui.rubber(self.attr_box)
         
         box = gui.vBox(self.mainArea, True, margin=0)
         box.layout().addWidget(self.graph)
         self.subplot = self.graph.getFigure().add_subplot()
+
+
         self.ax1 = self.subplot.twinx()
         self.show()
 
@@ -168,6 +186,7 @@ class OWEasyMatplot(OWWidget):
 
     # Is called whenever the plot should update
     def __update_plot(self):
+        print("Update Plot")
         self.subplot.clear()
         self.ax1.clear()
         
@@ -178,18 +197,19 @@ class OWEasyMatplot(OWWidget):
 
         self.subplot.set_xlabel(self.attr_x.name)
         self.subplot.set_ylabel(self.attr_y0.name, color = "r")
+
         self.ax1.set_ylabel(self.attr_y1.name, color = "b")
         self.ax1.spines["right"].set_position(("axes", 1.15))
         self.ax1.spines["right"].set_edgecolor("y")
         # self.ax1.callbacks.connect("ylim_changed", self.__update_plot) Es würde sobald sich ylim ändert, update_plot aufgerufen werden
 
         # Keine Tage werden berücksichtigt, hierfür wäre eine Einstellung sinnvoll
-        myFmt = mdates.DateFormatter('%H:%M:%S')
+        myFmt = mdates.DateFormatter('%H:%M:%S\n%d.%m.%Y')
         self.subplot.xaxis.set_major_formatter(myFmt)
         self.ax1.xaxis.set_major_formatter(myFmt)
-        
-        plot0 = self.subplot.plot(x, y, label = self.attr_y0.name, color = "r")
+
         plot1 = self.ax1.plot(x, self.__input_data[:, self.attr_y1], label = self.attr_y1.name, color = "b")
+        plot0 = self.subplot.plot(x, y, label=self.attr_y0.name, color="r")
 
         self.plots = plot0 + plot1
         self.labels = [self.attr_y0.name, self.attr_y1.name]
