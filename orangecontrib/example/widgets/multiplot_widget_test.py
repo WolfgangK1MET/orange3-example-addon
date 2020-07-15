@@ -70,13 +70,29 @@ class MultiplotWidget(QtWidgets.QWidget):
         for i in range(0, len(self.axs)):
             self.plot_data.append(Plotdata())
 
+    def add_y_to_plot(self, plot_number, x_values, y_values):
+        pass
 
+    def remove_y_from_plot(self, plot_number, y_axis_number):
+        pass
+
+    def remove_plot(self, plot_number):
+        pass
+
+    def get_plot_count(self):
+        pass
+
+    def set_y_values_of_plot(self, plot_number, y_axis_number, y_values):
+        pass
+
+    def set_x_values_of_plot(self, plot_number, x_values):
+        pass
 
     def get_axes(self, plot_number):
-        # Müsste noch abgeändert werden, dass von dem entsprechenden Plot die Daten zurückgegeben werden 
+        # Müsste noch abgeändert werden, dass von dem entsprechenden Plot die Daten zurückgegeben werden
         return self.axs
 
-    def plot_ax(self, ax_number, x_values, y_values):
+    def plot_axis(self, ax_number, x_values, y_values):
         # clear ax müsste noch gemacht werden
         self.axs[ax_number].plot(x_values, y_values)
 
