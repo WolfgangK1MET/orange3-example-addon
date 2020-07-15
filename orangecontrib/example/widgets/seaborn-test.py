@@ -1,22 +1,18 @@
 import Orange
 
-from Orange.data import Table, TimeVariable, Domain
-from Orange.widgets.widget import OWWidget, Input, Output, Msg
+from Orange.data import Table
 import Orange
 
-from Orange.data import Table, ContinuousVariable
+from Orange.data import Table
 from Orange.widgets.widget import OWWidget, Input, Output, Msg
 from matplotlib import pyplot as plt
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-from matplotlib.figure import Figure
 import seaborn as sns
 from Orange.widgets import gui
 
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
-from PyQt5 import QtCore, QtGui, QtWidgets
-from AnyQt.QtCore import Qt
+from PyQt5 import QtGui, QtWidgets
 from pyqtgraph.widgets.MatplotlibWidget import MatplotlibWidget
 from pyqtgraph.widgets.LayoutWidget import LayoutWidget
 from pyqtgraph.widgets.ColorButton import ColorButton
