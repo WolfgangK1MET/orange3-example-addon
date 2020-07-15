@@ -1,14 +1,8 @@
-from PyQt5 import QtCore, QtGui, QtWidgets
-from AnyQt.QtCore import Qt
-import matplotlib
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
-
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
-from PyQt5 import QtCore, QtGui, QtWidgets
-from AnyQt.QtCore import Qt
+from PyQt5 import QtGui, QtWidgets
+
 
 class SeabornWidget(QtWidgets.QWidget):
     def __init__(self, size=(5.0, 4.0), dpi=100):
