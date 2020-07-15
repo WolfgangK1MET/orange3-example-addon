@@ -6,7 +6,7 @@ from Orange.data import TimeVariable
 from Orange.widgets import gui
 
 from AnyQt.QtCore import Qt
-from PyQt4 import QtGui
+from PyQt5 import QtGui
 
 class Second(QtGui.QMainWindow):
     def __init__(self, parent=None):
