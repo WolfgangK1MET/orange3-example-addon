@@ -18,6 +18,8 @@ from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as Navigatio
 from PyQt5 import QtCore, QtGui, QtWidgets
 from AnyQt.QtCore import Qt
 from pyqtgraph.widgets.MatplotlibWidget import MatplotlibWidget
+from pyqtgraph.widgets.LayoutWidget import LayoutWidget
+from pyqtgraph.widgets.ColorButton import ColorButton
 
 class SeabornWidget2(QtWidgets.QWidget):
     def __init__(self, size=(5.0, 4.0), dpi=100):
@@ -72,6 +74,7 @@ class OWSeabornTest(OWWidget,QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()
         self.graph = MatplotlibWidget()
+        self.grid = LayoutWidget()
         box = gui.vBox(self.mainArea, True, margin=0)
         box.layout().addWidget(self.graph)
         self.ax1 = self.graph.getFigure().add_subplot(121)
@@ -84,13 +87,14 @@ class OWSeabornTest(OWWidget,QtWidgets.QMainWindow):
         self.dropdown2.addItems(["sex", "time", "smoker", "day"])
         self.dropdown2.setCurrentIndex(2)
 
+        control_box = gui.vBox(self.controlArea, True, margin=0)
+        control_box.layout().addWidget(self.grid)
 
-
-        layout = QtWidgets.QGridLayout(self.controlArea)
-        layout.addWidget(QtWidgets.QLabel("Select category for subplots"))
-        layout.addWidget(self.dropdown1)
-        layout.addWidget(QtWidgets.QLabel("Select category for markers"))
-        layout.addWidget(self.dropdown2)
+        self.grid.addWidget(QtWidgets.QLabel("Select category for subplots"), 0, 0)
+        self.grid.addWidget(self.dropdown1, 0, 1, 1, 1)
+        self.grid.addWidget(QtWidgets.QLabel("Select category for markers"), 1, 0)
+        self.grid.addWidget(self.dropdown2, 1, 1, 1, 1)
+        self.grid.addWidget(ColorButton(), 1, 2, 1, 1)
 
         self.dropdown1.currentIndexChanged.connect(self.update)
         self.dropdown2.currentIndexChanged.connect(self.update)
