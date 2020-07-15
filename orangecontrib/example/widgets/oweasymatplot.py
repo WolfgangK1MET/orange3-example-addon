@@ -8,13 +8,13 @@ from Orange.widgets.utils.itemmodels import DomainModel
 from pyqtgraph.widgets.MatplotlibWidget import MatplotlibWidget
 import dateutil.parser
 import matplotlib.dates as mdates
-from mpldatacursor import datacursor
+# from mpldatacursor import datacursor
 
 # Datacursor hinzufügen, um Daten bei der Mausposition anzuzeigen
 
 from AnyQt.QtCore import Qt
-from PyQt5 import QtGui, QtCore
-import sys
+from PyQt5 import QtGui
+
 
 # Todo
 # Weitere Achsen können mit dem Dictionary des Objekts hinzugefügt werden.
