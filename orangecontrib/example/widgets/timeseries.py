@@ -4,7 +4,7 @@ import itertools
 from more_itertools import unique_everseen
 import numpy as np
 
-from Orange.data import Table, Domain, TimeVariable, ContinuousVariable
+from Orange.data import Table, Domain, ContinuousVariable
 
 import Orange.data
 from os.path import join, dirname
