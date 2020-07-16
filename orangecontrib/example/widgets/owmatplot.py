@@ -19,20 +19,93 @@ from AnyQt.QtCore import Qt
 
 class Plot:
     def __init__(self, x_values, y_values, y_axis):
-        self.y_axes = y_axes
-        self.x_values = x_values
-        self.y_values = y_values
+        self._y_axis = y_axis
+        self._x_values = x_values
+        self._y_values = y_values
+
+    @property
+    def x_values(self):
+        return self._x_values
+
+    @x_values.setter
+    def x_values(self, values):
+        self._x_values = values
+
+    @property
+    def y_values(self):
+        return self._y_values
+
+    @y_values.setter
+    def y_values(self, values):
+        self._y_values = values
+
+    @property
+    def y_axis(self):
+        return self._y_axis
+
+    @y_axis.setter
+    def y_axis(self, value):
+        self._y_axis = value
+
 
 class YAxisData:
     def __init__(self, y_values, y_axis, color_code):
-        self.y_axis_values = y_values
-        self.y_axis = y_axis
-        self.color_code = color_code
-        self.line_size = 1
-        self.line_type = '-'
-        self.point_type = ''
+        self._y_axis_values = y_values
+        self._y_axis = y_axis
+        self._color_code = color_code
+        self._line_size = 1
+        self._line_type = '-'
+        self._point_type = ''
 
-    
+    # Properties
+
+    @property
+    def point_type(self):
+        return self._point_type
+
+    @point_type.setter
+    def point_type(self, value):
+        self._point_type = value
+
+    @property
+    def line_size(self):
+        return self._line_size
+
+    @line_size.setter
+    def line_size(self, value):
+        self._line_size = value
+
+    @property
+    def line_type(self):
+        return self._line_type
+
+    @line_type.setter
+    def line_type(self, value):
+        self._line_type = value
+
+    @property
+    def line_color(self):
+        return self._color_code
+
+    @line_color.setter
+    def line_color(self, value):
+        self._color_code = value
+
+    @property
+    def y_values(self):
+        return self._y_axis_values
+
+    @y_values.setter
+    def y_values(self, values):
+        self._y_axis_values = values
+
+    @property
+    def y_axis(self):
+        return self._y_axis
+
+    @y_axis.setter
+    def y_axis(self, value):
+        self._y_axis = value
 
 class DataAccessObject:
     pass
