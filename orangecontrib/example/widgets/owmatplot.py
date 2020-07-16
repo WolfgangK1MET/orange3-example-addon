@@ -18,10 +18,10 @@ from AnyQt.QtCore import Qt
 
 
 class Plot:
-    def __init__(self, x_values, y_values, y_axis):
+    def __init__(self, x_values, y_values, y_axis_name, y_axis):
         self._x_values = x_values
         self._y_axes = []
-        y_axis = YAxisData(y_values, y_axis, '')
+        y_axis = YAxisData(y_values, y_axis, y_axis_name, '')
         self._y_axes.append(y_axis)
 
     # Getter and Setter #
@@ -41,16 +41,31 @@ class Plot:
     def y_axes(self, values):
         self._y_axes = values
 
+    def append_y_axis(self, y_axis):
+        self._y_axes.append(y_axis)
+
+    def remove_y_axis(self, axis_name):
+
+
 class YAxisData:
-    def __init__(self, y_values, y_axis, color_code):
+    def __init__(self, y_values, y_axis, name, color_code):
         self._y_axis_values = y_values
         self._y_axis = y_axis
         self._color_code = color_code
         self._line_size = 1
         self._line_type = '-'
         self._point_type = ''
+        self._name = name
 
     # Getter and Setter #
+    @property
+    def y_axis_name(self):
+        return self._name
+
+    @y_axis_name.setter
+    def y_axis_name(self, value):
+        self._name = value
+
     @property
     def point_type(self):
         return self._point_type
