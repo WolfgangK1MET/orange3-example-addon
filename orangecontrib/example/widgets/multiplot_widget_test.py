@@ -1,4 +1,4 @@
-
+from Orange.widgets import gui
 from Orange.data import Table
 import Orange
 
@@ -7,13 +7,12 @@ import numpy as np
 from Orange.data import Table
 from Orange.widgets.widget import OWWidget, Input, Output, Msg
 from matplotlib import pyplot as plt
-
-from Orange.widgets import gui
-
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 from PyQt5 import QtGui, QtWidgets
-import matplotlib
+
+
+
 
 class Plotdata:
     def __init__(self, x_label_name = "", y_label_names = ""):
@@ -120,7 +119,7 @@ class MultiplotWidget(QtWidgets.QWidget):
 
 
 class MultiplotTest(OWWidget, QtWidgets.QMainWindow):
-    name = "Matplot - test"
+    name = "Multiplot"
     description = "A widget for easy plots with matplotlib"
     icon = "icons/oweasyplot.svg"
     want_main_area = True
