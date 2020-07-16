@@ -23,6 +23,7 @@ class Plot:
         self._x_values = x_values
         self._y_values = y_values
 
+    # Getter and Setter #
     @property
     def x_values(self):
         return self._x_values
@@ -57,8 +58,7 @@ class YAxisData:
         self._line_type = '-'
         self._point_type = ''
 
-    # Properties
-
+    # Getter and Setter #
     @property
     def point_type(self):
         return self._point_type
@@ -107,8 +107,22 @@ class YAxisData:
     def y_axis(self, value):
         self._y_axis = value
 
+
 class DataAccessObject:
-    pass
+    def __init__(self):
+        pass
+
+    def load_y_axis_data(self):
+        pass
+
+    def save_y_axis_data(self):
+        pass
+
+    def save_plot_data(self):
+        pass
+
+    def load_plot_data(self):
+        pass
 
 
 class AxisView:
