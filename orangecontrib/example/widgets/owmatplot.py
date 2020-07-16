@@ -18,10 +18,10 @@ from AnyQt.QtCore import Qt
 
 
 class Plot:
-    def __init__(self, x_values, y_values, y_axis_name, y_axis):
+    def __init__(self, x_values, y_values, y_axis_name, y_axis, y_model, common_options):
         self._x_values = x_values
         self._y_axes = []
-        y_axis = YAxisData(y_values, y_axis, y_axis_name, '')
+        y_axis = YAxisData(y_values, y_axis, y_axis_name, '', y_model, common_options)
         self._y_axes.append(y_axis)
 
     # Getter and Setter #
@@ -45,10 +45,14 @@ class Plot:
         self._y_axes.append(y_axis)
 
     def remove_y_axis(self, axis_name):
+        pass
+
+    def get_y_axis(self, y_axis_number):
+        return self._y_axes[y_axis_number]
 
 
 class YAxisData:
-    def __init__(self, y_values, y_axis, name, color_code):
+    def __init__(self, y_values, y_axis, name, color_code, model, common_options):
         self._y_axis_values = y_values
         self._y_axis = y_axis
         self._color_code = color_code
@@ -56,6 +60,8 @@ class YAxisData:
         self._line_type = '-'
         self._point_type = ''
         self._name = name
+        self.model = model
+        self.common_options = common_options
 
     # Getter and Setter #
     @property
@@ -133,15 +139,18 @@ class DataAccessObject:
 
 
 class AxisView:
-    pass
+    def __init__(self):
+        pass
 
 
 class YAxisView:
-    pass
+    def __init__(self, axis_data):
+        self._axis_data = axis_data
 
 
 class YAxisConfigView:
-    pass
+    def __init__(self, axis_data):
+        self._axis_data = axis_data
 
 
 def enter_axes(event):
@@ -156,16 +165,6 @@ def leave_axes(event):
     event.inaxes.patch.set_facecolor('white')
     event.inaxes.set_ylabel("LEAVE TEST", color="b")
     event.canvas.draw()
-
-
-class YAxisData:
-    def __init__(self, model, number, **common_options):
-        self.model = model
-        self.number = number
-        self.common_options = common_options
-
-    def store_settings(self):
-        print("store settings ... NOT IMPLEMENTED")
 
 
 class OWMatplot(OWWidget):
