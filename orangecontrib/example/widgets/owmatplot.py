@@ -19,9 +19,10 @@ from AnyQt.QtCore import Qt
 
 class Plot:
     def __init__(self, x_values, y_values, y_axis):
-        self._y_axis = y_axis
         self._x_values = x_values
-        self._y_values = y_values
+        self._y_axes = []
+        y_axis = YAxisData(y_values, y_axis, '')
+        self._y_axes.append(y_axis)
 
     # Getter and Setter #
     @property
@@ -33,21 +34,12 @@ class Plot:
         self._x_values = values
 
     @property
-    def y_values(self):
-        return self._y_values
+    def y_axes(self):
+        return self._y_axes
 
-    @y_values.setter
-    def y_values(self, values):
-        self._y_values = values
-
-    @property
-    def y_axis(self):
-        return self._y_axis
-
-    @y_axis.setter
-    def y_axis(self, value):
-        self._y_axis = value
-
+    @y_axes.setter
+    def y_axes(self, values):
+        self._y_axes = values
 
 class YAxisData:
     def __init__(self, y_values, y_axis, color_code):
