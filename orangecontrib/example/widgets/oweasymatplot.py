@@ -8,7 +8,7 @@ from Orange.widgets.utils.itemmodels import DomainModel
 from pyqtgraph.widgets.MatplotlibWidget import MatplotlibWidget
 import dateutil.parser
 import matplotlib.dates as mdates
-# from mpldatacursor import datacursor
+from mpldatacursor import datacursor
 
 # Datacursor hinzufügen, um Daten bei der Mausposition anzuzeigen
 
@@ -211,8 +211,13 @@ class OWEasyMatplot(OWWidget):
         plot1 = self.ax1.plot(x, self.__input_data[:, self.attr_y1], label = self.attr_y1.name, color = "b")
         plot0 = self.subplot.plot(x, y, label=self.attr_y0.name, color="r")
 
+
         self.plots = plot0 + plot1
         self.labels = [self.attr_y0.name, self.attr_y1.name]
+
+        # Das Datum müsste noch auf das richtige Format gebracht werden.
+        datacursor(plot0, bbox=dict(fc='white'),
+                 arrowprops=dict(arrowstyle='simple', fc='white', alpha=0.5))
 
         self.graph.getFigure().tight_layout()
         self.__commit()
