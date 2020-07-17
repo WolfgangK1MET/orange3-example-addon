@@ -174,6 +174,13 @@ class YAxisView:
         self._axis_data = axis_data
         self.attr_y = None
         self._axis_box = axis_box
+
+        # Aus Gründen auch immer fehlt connect_control bei YAxisView
+        # Evtl. passen die Callbacks oder die Variablen nicht.
+        self._cb_attr_y = gui.comboBox(self._axis_box, self, "attr_y", label=self._axis_data.name,
+                                       callback=self._on_attr_y_change, model=self._axis_data.model,
+                                       **self._axis_data.common_options,
+                                       searchable=True)
         
         self._axis_h_box = gui.hBox(self._axis_box, True)
         self._b_attr_remove = gui.button(self._axis_h_box, self, label="Remove", callback=self._on_remove)
