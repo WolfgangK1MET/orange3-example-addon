@@ -179,24 +179,12 @@ class XAxisView:
     def _on_x_attr_change(self):
         pass
 
-# An sich könnte YAxisView höchstwahrscheinlich von XAxisView erben und XAxisView zu AxisView unbenannt werden.
-# Jedoch ist noch nicht ganz sicher, welche Daten in XAxisView noch untergebracht werden.
-class YAxisView:
+
+class YAxisEntry:
     def __init__(self, axis_box, axis_data):
         self._axis_data = axis_data
         self.attr_y = None
         self._axis_box = axis_box
-
-        # Aus Gründen auch immer fehlt connect_control bei YAxisView
-        # Evtl. passen die Callbacks oder die Variablen nicht.
-        self._cb_attr_y = gui.comboBox(self._axis_box, self, "attr_y", label=self._axis_data.name,
-                                       callback=self._on_attr_y_change, model=self._axis_data.model,
-                                       **self._axis_data.common_options,
-                                       searchable=True)
-        
-        self._axis_h_box = gui.hBox(self._axis_box, True)
-        self._b_attr_remove = gui.button(self._axis_h_box, self, label="Remove", callback=self._on_remove)
-        self._b_attr_edit = gui.button(self._axis_h_box, self, label="Edit", callback=self._on_edit)
 
     # Callback function to update y_axis_data on attribute change
     def _on_attr_y_change(self):
