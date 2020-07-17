@@ -169,10 +169,30 @@ class AxisView:
     def __init__(self, attr_box):
         pass
 
+class YAxisView:
+    def __init__(self, axis_box, axis_data):
+        self._axis_data = axis_data
+        self._attr_y = None
+        self._axis_box = axis_box
+        self._cb_attr_y0 = gui.comboBox(self._axis_box, self, "attr_y", label=self._axis_data.name,
+                                       callback=self._on_attr_y_change, model=self._axis_data.model,
+                                       **self._axis_data.common_options,
+                                       searchable=True)
+        self._axis_h_box = gui.hBox(self._axis_box, True)
+        self._b_attr_remove = gui.button(self._axis_h_box, self, label="Remove", callback=self._on_remove)
+        self._b_attr_edit = gui.button(self._axis_h_box, self, label="Edit", callback=self._on_edit)
+
+    def _on_attr_y_change(self):
+        pass
+
+    def _on_edit(self):
+        pass
+
+    def _on_remove(self):
+        pass
 
 class YAxisConfigView:
-    def __init__(self, axis_data):
-        self._axis_data = axis_data
+    def __init__(self, axis_data, attr_y_label = ""):
 
 
 class PlotConfigView:
@@ -220,6 +240,7 @@ class OWMatplot(OWWidget):
                                       callback=self.set_attr_x_from_combo, model=self.x_model, **common_options,
                                       searchable=True)
         self.axis_box = gui.vBox(self.attr_box, True)
+        self.y_view = YAxisView(self.axis_box, self.y_axis_data)
 
         # Man kann leider nicht den Variablenamen vom y-axis-data übergeben ...
         self.cb_attr_y0 = gui.comboBox(self.axis_box, self, "attr_y0", label="Axis y:",
