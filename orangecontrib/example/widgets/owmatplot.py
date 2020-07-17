@@ -148,25 +148,28 @@ class YAxisData:
 
 class DataAccessObject:
     def __init__(self):
-        pass
+        print("Init data access object")
 
     def load_y_axis_data(self):
-        pass
+        print("load y axis data")
 
     def save_y_axis_data(self):
-        pass
+        print("save y axis data")
 
     def save_plot_data(self):
-        pass
+        print("save plot data")
 
     def load_plot_data(self):
-        pass
+        print("load plot data")
 
 
 class XAxisView:
     def __init__(self, attr_box, label_name, model = None, attr_x = None, common_options = None):
         self._model = model
         self._common_options = common_options
+        # attr_x ist an sich ein Objekt, sollte sich also mit ändern. Das könnte jedoch auch zu Problemen führen.
+        # Variable, auf die verwiesen wird nicht mehr vorhanden -> Änderungen keine Wirkungen mehr.
+        # Wird auf Änderung von außen reagiert?
         self._attr_x = attr_x
         self._label_name = label_name
         self.cb_attr_x = gui.comboBox(self._attr_x, self, "_attr_x", label=self._label_name,
@@ -200,6 +203,9 @@ class YAxisView:
         self._axis_data._attr_y = self.attr_y
 
     # Callback function to open new window for editing
+    # Es ist fraglich, ob die View überhaupt eine andere View öffnen sollte.
+    # Eine Möglichkeit wäre auch, dass man eine Callback Funtkion aufruft, welche
+    # benachrichtigt, dass on_edit gedrückt wurde.
     def _on_edit(self):
         pass
 
