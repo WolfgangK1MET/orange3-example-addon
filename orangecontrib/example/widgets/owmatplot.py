@@ -260,10 +260,6 @@ class OWMatplot(OWWidget):
     def set_attr_x_from_combo(self):
         self.__update_plot()
 
-    # Callback function for cb_attr_y
-    def set_attr_y_from_combo(self):
-        self.__update_plot()
-
     @Inputs.data
     def set_data(self, dataset):
         self.__input_data = dataset
