@@ -52,7 +52,7 @@ class Plot:
 
 
 class YAxisData:
-    def __init__(self, y_values, y_axis, name, color_code, model, common_options):
+    def __init__(self, y_values = None, attr_y = None, y_axis = None, name = "", color_code = "", model = None, common_options = None):
         self._y_axis_values = y_values
         self._y_axis = y_axis
         self._color_code = color_code
@@ -60,10 +60,35 @@ class YAxisData:
         self._line_type = '-'
         self._point_type = ''
         self._name = name
-        self.model = model
-        self.common_options = common_options
+        self._model = model
+        self._common_options = common_options
+        self._attr_y = attr_y
 
     # Getter and Setter #
+    @property
+    def attr_y(self):
+        return self._attr_y
+
+    @attr_y.setter
+    def attr_y(self, value):
+        self._attr_y = value
+
+    @property
+    def common_options(self):
+        return self._common_options
+
+    @common_options.setter
+    def common_options(self, value):
+        self._common_options = value
+
+    @property
+    def model(self):
+        return self._model
+
+    @model.setter
+    def model(self, value):
+        self._model = value
+
     @property
     def y_axis_name(self):
         return self._name
@@ -121,6 +146,8 @@ class YAxisData:
         self._y_axis = value
 
 
+
+
 class DataAccessObject:
     def __init__(self):
         pass
@@ -139,13 +166,8 @@ class DataAccessObject:
 
 
 class AxisView:
-    def __init__(self):
+    def __init__(self, attr_box):
         pass
-
-
-class YAxisView:
-    def __init__(self, axis_data):
-        self._axis_data = axis_data
 
 
 class YAxisConfigView:
@@ -153,18 +175,8 @@ class YAxisConfigView:
         self._axis_data = axis_data
 
 
-def enter_axes(event):
-    print('enter_axes', event.inaxes)
-    event.inaxes.patch.set_facecolor('yellow')
-    event.inaxes.set_ylabel("TEST", color="b")
-    event.canvas.draw()
-
-
-def leave_axes(event):
-    print('leave_axes', event.inaxes)
-    event.inaxes.patch.set_facecolor('white')
-    event.inaxes.set_ylabel("LEAVE TEST", color="b")
-    event.canvas.draw()
+class PlotConfigView:
+    pass
 
 
 class OWMatplot(OWWidget):
@@ -190,29 +202,28 @@ class OWMatplot(OWWidget):
 
         self.__input_data = None
         self.Warning.empty_data(shown=True)
+        self.y_axis_data = YAxisData()
 
         common_options = dict(labelWidth=50, orientation=Qt.Horizontal, sendSelectedValue=True, contentsLength=14)
+        self.y_axis_data.common_options = common_options
 
         self.attr_box = gui.vBox(self.controlArea, True)
 
         self.attr_x = None
-        self.attr_y1 = None
+        self.attr_y0 = None
 
         dmod = DomainModel
         self.x_model = DomainModel(dmod.MIXED, valid_types=TimeVariable)
-        self.y_model = DomainModel(dmod.MIXED, valid_types=ContinuousVariable)
-        self.attr_y0 = None
-
-        self.__dict__["edit_y0_axis"] = lambda self: print("Something")
+        self.y_axis_data.model = DomainModel(dmod.MIXED, valid_types=ContinuousVariable)
 
         self.cb_attr_x = gui.comboBox(self.attr_box, self, "attr_x", label="Axis x:",
                                       callback=self.set_attr_x_from_combo, model=self.x_model, **common_options,
                                       searchable=True)
         self.axis_box = gui.vBox(self.attr_box, True)
 
-
+        # Man kann leider nicht den Variablenamen vom y-axis-data übergeben ...
         self.cb_attr_y0 = gui.comboBox(self.axis_box, self, "attr_y0", label="Axis y:",
-                                       callback=self.set_attr_y_from_combo, model=self.y_model, **common_options,
+                                       callback=self.set_attr_y_from_combo, model=self.y_axis_data.model, **common_options,
                                        searchable=True)
         self.axis_h_box0 = gui.hBox(self.axis_box, True)
         self.b_attr_remove0 = gui.button(self.axis_h_box0, self, label="Remove", callback=self.__update_plot)
@@ -246,7 +257,7 @@ class OWMatplot(OWWidget):
             time_var = self.__detect_time_variable()
 
             self.x_model.set_domain(dataset.domain)
-            self.y_model.set_domain(dataset.domain)
+            self.y_axis_data.model.set_domain(dataset.domain)
 
             # TODO: Throw exception if there is no datetime or/and number type
             self.attr_x = time_var
