@@ -146,8 +146,6 @@ class YAxisData:
         self._y_axis = value
 
 
-
-
 class DataAccessObject:
     def __init__(self):
         pass
@@ -165,10 +163,21 @@ class DataAccessObject:
         pass
 
 
-class AxisView:
-    def __init__(self, attr_box):
+class XAxisView:
+    def __init__(self, attr_box, label_name, model = None, attr_x = None, common_options = None):
+        self._model = model
+        self._common_options = common_options
+        self._attr_x = attr_x
+        self._label_name = label_name
+        self.cb_attr_x = gui.comboBox(self._attr_x, self, "_attr_x", label=self._label_name,
+                                      callback=self._on_x_attr_change, model=self._model, **self._common_options,
+                                      searchable=True)
+
+    def _on_x_attr_change(self):
         pass
 
+# An sich könnte YAxisView höchstwahrscheinlich von XAxisView erben und XAxisView zu AxisView unbenannt werden.
+# Jedoch ist noch nicht ganz sicher, welche Daten in XAxisView noch untergebracht werden.
 class YAxisView:
     def __init__(self, axis_box, axis_data):
         self._axis_data = axis_data
@@ -217,7 +226,8 @@ class OWMatplot(OWWidget):
         selected = Output("Selected Data", Orange.data.Table)
 
     class Error(OWWidget.Error):
-        pass
+        no_valid_datetime_found = Msg("There was no valid datetime found in the given data.")
+        no_valid_values_found = Msg("There were no valid values found in the given data.")
 
     class Warning(OWWidget.Warning):
         empty_data = Msg("There is no data to show.")
@@ -272,9 +282,14 @@ class OWMatplot(OWWidget):
             self.x_model.set_domain(dataset.domain)
             self.y_axis_data.model.set_domain(dataset.domain)
 
-            # TODO: Throw exception if there is no datetime or/and number type
+            if time_var is None:
+                self.Error.no_valid_datetime_found(shown = True)
+
             self.attr_x = time_var
             self.attr_y0 = TableUtility.get_first_continuous_variable(self.__input_data)
+
+            if attr_y0 is None:
+                self.Error.no_valid_values_found(shown = True)
 
             # self.cid = self.graph.canvas.mpl_connect('on_click', onclick)
             self.__update_plot()
