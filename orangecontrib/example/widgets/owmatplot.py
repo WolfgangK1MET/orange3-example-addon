@@ -195,12 +195,18 @@ class YAxisView:
         self._b_attr_remove = gui.button(self._axis_h_box, self, label="Remove", callback=self._on_remove)
         self._b_attr_edit = gui.button(self._axis_h_box, self, label="Edit", callback=self._on_edit)
 
+    # Callback function to update y_axis_data on attribute change
     def _on_attr_y_change(self):
-        pass
+        self._axis_data._attr_y = self.attr_y
 
+    # Callback function to open new window for editing
     def _on_edit(self):
         pass
 
+    # Es ist noch unklar, wie man das entfernen am besten umsetzbar ist.
+    # An sich wäre es möglich, die ganzen Boxen zu verstecken, jedoch finde ich, dass es wohl besser wäre
+    # gleich die ganze View zu entfernen. Also muss der Verwender der View irgendwie benachrichtigt werden, wenn
+    # remove gedrückt wurde -> callback function?
     def _on_remove(self):
         pass
 
@@ -274,6 +280,8 @@ class OWMatplot(OWWidget):
     def set_data(self, dataset):
         self.__input_data = dataset
         self.Warning.empty_data(shown=True)
+        self.Error.no_valid_values_found(shown=False)
+        self.Error.no_valid_datetime_found(shown=False)
 
         if dataset is not None:
             self.Warning.empty_data(shown=False)
@@ -283,13 +291,13 @@ class OWMatplot(OWWidget):
             self.y_axis_data.model.set_domain(dataset.domain)
 
             if time_var is None:
-                self.Error.no_valid_datetime_found(shown = True)
+                self.Error.no_valid_datetime_found(shown=True)
 
             self.attr_x = time_var
             self.attr_y0 = TableUtility.get_first_continuous_variable(self.__input_data)
 
-            if attr_y0 is None:
-                self.Error.no_valid_values_found(shown = True)
+            if self.attr_y0 is None:
+                self.Error.no_valid_values_found(shown=True)
 
             # self.cid = self.graph.canvas.mpl_connect('on_click', onclick)
             self.__update_plot()
