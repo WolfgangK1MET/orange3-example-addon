@@ -40,16 +40,16 @@ class OWEasyMatplot(OWWidget):
         self.fregion.setZValue(10)
         # Add the LinearRegionItem to the ViewBox, but tell the ViewBox to exclude this
         # item when doing auto-range calculations.
-        p2.addItem(region, ignoreBounds=True)
+        self.p2.addItem(self.region, ignoreBounds=True)
 
-        p1.setAutoVisible(y=True)
+        self.p1.setAutoVisible(y=True)
         data1 = 10000 + 15000 * pg.gaussianFilter(np.random.random(size=10000), 10) + 3000 * np.random.random(
             size=10000)
         data2 = 15000 + 15000 * pg.gaussianFilter(np.random.random(size=10000), 10) + 3000 * np.random.random(
             size=10000)
 
-        p1.plot(data1, pen="r")
-        p2.plot(data1, pen="w")
+        self.p1.plot(data1, pen="r")
+        self.p2.plot(data1, pen="w")
 
     @Inputs.data
     def set_data(self, dataset):
@@ -58,10 +58,10 @@ class OWEasyMatplot(OWWidget):
         self.Warning.empty_data(shown=self.__input_data)
         self.Outputs.selected.send(None)
 
-    def update():
+    def update(self):
         self.region.setZValue(10)
         minX, maxX = self.region.getRegion()
-        p1.setXRange(minX, maxX, padding=0)
+        self.p1.setXRange(minX, maxX, padding=0)
 
 if __name__ == "__main__":
     from AnyQt.QtWidgets import QApplication
