@@ -7,6 +7,24 @@ import numpy as np
 import dateutil.parser
 from Orange.data import TimeVariable
 
+class TableUtility:
+    @staticmethod
+    def get_first_time_variable(dataset):
+        for attribute in list(dataset.domain.metas) + list(dataset.domain.attributes):
+            if type(attribute) == TimeVariable:
+                return attribute
+
+        return None
+
+    @staticmethod
+    def get_first_continuous_variable(dataset):
+        for attribute in list(dataset.domain.metas) + list(dataset.domain.attributes):
+            if type(attribute) == ContinuousVariable and type(attribute) != TimeVariable:
+                return attribute
+
+        return None
+
+
 class OWEasyMatplot(OWWidget):
     name = "Matplot - test"
     description = "A widget for easy plots with matplotlib"
@@ -68,6 +86,9 @@ class OWEasyMatplot(OWWidget):
         self.p1.sigRangeChanged.connect(self.updateRegion)
 
         self.region.setRegion([1000, 2000])
+
+        self.x_model = DomainModel(dmod.MIXED, valid_types=TimeVariable)
+        self.y_model = DomainModel(dmod.MIXED, valid_types=ContinuousVariable)
 
     def mouseMoved(self, evt):
         pos = evt[0]  ## using signal proxy turns original arguments into a tuple
@@ -139,19 +160,3 @@ if __name__ == "__main__":
     a.exec()
 
 
-class TableUtility:
-    @staticmethod
-    def get_first_time_variable(dataset):
-        for attribute in list(dataset.domain.metas) + list(dataset.domain.attributes):
-            if type(attribute) == TimeVariable:
-                return attribute
-
-        return None
-
-    @staticmethod
-    def get_first_continuous_variable(dataset):
-        for attribute in list(dataset.domain.metas) + list(dataset.domain.attributes):
-            if type(attribute) == ContinuousVariable and type(attribute) != TimeVariable:
-                return attribute
-
-        return None
