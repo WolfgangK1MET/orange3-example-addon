@@ -1,18 +1,8 @@
 import Orange
 
-from Orange.data import Table, ContinuousVariable
+from Orange.data import Table
 from Orange.widgets.widget import OWWidget, Input, Output, Msg
-from Orange.data import TimeVariable
-from Orange.widgets import gui
-from Orange.widgets.utils.itemmodels import DomainModel
-from pyqtgraph.widgets.MatplotlibWidget import MatplotlibWidget
-import dateutil.parser
-import matplotlib.dates as mdates
-from mpldatacursor import datacursor
 import pyqtgraph as pg
-from pyqtgraph.Qt import QtCore, QtGui
-from AnyQt.QtCore import Qt
-from PyQt5 import QtGui
 
 
 class OWEasyMatplot(OWWidget):
