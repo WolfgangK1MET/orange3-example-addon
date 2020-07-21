@@ -131,8 +131,6 @@ class OWEasyMatplot(OWWidget):
 
     def __update_plot(self):
         print("Update Plot")
-        self.subplot.clear()
-        self.ax1.clear()
 
         x = []
         for row in self.__input_data:
