@@ -9,7 +9,8 @@ from pyqtgraph.widgets.MatplotlibWidget import MatplotlibWidget
 import dateutil.parser
 import matplotlib.dates as mdates
 from mpldatacursor import datacursor
-
+import pyqtgraph as pg
+from pyqtgraph.Qt import QtCore, QtGui
 from AnyQt.QtCore import Qt
 from PyQt5 import QtGui
 
@@ -38,8 +39,10 @@ class OWEasyMatplot(OWWidget):
         self.__input_data = None
         self.Warning.empty_data(shown=True)
 
-        self.graph = MatplotlibWidget()
-        self.graph.draw()
+        self.graph = pg.PlotWidget()
+
+        box = gui.vBox(self.mainArea, True, margin=0)
+        box.layout().addWidget(self.graph)
         self.show()
 
     @Inputs.data
