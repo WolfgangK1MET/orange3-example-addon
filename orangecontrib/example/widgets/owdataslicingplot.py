@@ -6,6 +6,7 @@ import pyqtgraph as pg
 import numpy as np
 import dateutil.parser
 from Orange.data import TimeVariable
+from Orange.widgets.utils.itemmodels import DomainModel
 
 class TableUtility:
     @staticmethod
@@ -45,6 +46,8 @@ class OWEasyMatplot(OWWidget):
 
     def __init__(self):
         super().__init__()
+
+        dmod = DomainModel
 
         self.__input_data = None
         self.Warning.empty_data(shown=True)
