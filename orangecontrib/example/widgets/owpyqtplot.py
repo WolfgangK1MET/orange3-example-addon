@@ -39,7 +39,7 @@ class OWEasyMatplot(OWWidget):
         self.Warning.empty_data(shown=True)
 
         self.graph = MatplotlibWidget()
-
+        self.graph.draw()
         self.show()
 
     @Inputs.data
