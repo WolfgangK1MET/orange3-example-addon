@@ -7,6 +7,7 @@ import numpy as np
 import dateutil.parser
 from Orange.data import TimeVariable
 from Orange.widgets.utils.itemmodels import DomainModel
+import datetime
 
 class TableUtility:
     @staticmethod
@@ -135,15 +136,10 @@ class OWEasyMatplot(OWWidget):
         x = []
         for row in self.__input_data:
             x.append(dateutil.parser.parse(f'{row["DatumUhrzeit"]}'))
-        y = self.selected = self.__input_data[:, self.attr_y0]  # Wie, wenn mehrere attr_y?
+        y = self.selected = self.__input_data[:, self.attr_y0]
 
-        n = []
-        for i, v in enumerate(x):
-            n.append([v, y[i]])
-
-        x = np.array(n, dtype=[TimeVariable, ContinuousVariable])
-        self.p1.plot(x, pen="r")
-        self.p2.plot(x, pen="w")
+        c = self.p1.plot()
+        c.setData(x = x, y = y)
 
     def update(self):
         self.region.setZValue(10)
