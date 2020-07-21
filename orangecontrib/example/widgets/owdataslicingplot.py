@@ -29,16 +29,27 @@ class OWEasyMatplot(OWWidget):
 
         self.__input_data = None
         self.Warning.empty_data(shown=True)
-        self.win = pg.GraphicsLayoutWidget(show=True)
+        self.win = pg.GraphicsLayoutWidget()
         self.win.setWindowTitle("Test")
-        l = QtWidgets.QGridLayout()
-        l.addItem(self.win, 0, 0)
-        self.mainArea.addWidget(l)
+        self.mainArea.layout().addWidget(self.win)
 
-        p1 = self.win.addPlot(row = 1, col = 0)
-        p2 = self.win.addPlot(row=2, col=0)
+        self.p1 = self.win.addPlot(row = 1, col = 0)
+        self.p2 = self.win.addPlot(row=2, col=0)
 
+        self.region = pg.LinearRegionItem()
+        self.fregion.setZValue(10)
+        # Add the LinearRegionItem to the ViewBox, but tell the ViewBox to exclude this
+        # item when doing auto-range calculations.
+        p2.addItem(region, ignoreBounds=True)
 
+        p1.setAutoVisible(y=True)
+        data1 = 10000 + 15000 * pg.gaussianFilter(np.random.random(size=10000), 10) + 3000 * np.random.random(
+            size=10000)
+        data2 = 15000 + 15000 * pg.gaussianFilter(np.random.random(size=10000), 10) + 3000 * np.random.random(
+            size=10000)
+
+        p1.plot(data1, pen="r")
+        p2.plot(data1, pen="w")
 
     @Inputs.data
     def set_data(self, dataset):
@@ -47,6 +58,10 @@ class OWEasyMatplot(OWWidget):
         self.Warning.empty_data(shown=self.__input_data)
         self.Outputs.selected.send(None)
 
+    def update():
+        self.region.setZValue(10)
+        minX, maxX = self.region.getRegion()
+        p1.setXRange(minX, maxX, padding=0)
 
 if __name__ == "__main__":
     from AnyQt.QtWidgets import QApplication
