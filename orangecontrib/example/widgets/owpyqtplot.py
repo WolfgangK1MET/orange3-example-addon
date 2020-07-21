@@ -41,8 +41,8 @@ class OWEasyMatplot(OWWidget):
 
         self.graph = pg.PlotWidget()
 
-        box = gui.vBox(self.mainArea, True, margin=0)
-        box.layout().addWidget(self.graph)
+        # box = gui.vBox(self.mainArea, True, margin=0)
+        self.mainArea.layout().addWidget(self.graph)
         self.show()
 
     @Inputs.data
