@@ -81,8 +81,8 @@ class OWEasyMatplot(OWWidget):
         axis = DateAxisItem()
         self.p1.setAxisItems({"bottom": axis})
 
-        self.p1.plot(self.data1, pen="r", {"bottom": axis})
-        self.p2.plot(self.data1, pen="w")
+        self.c1 = self.p1.plot(pen="r")
+        self.c2 = self.p2.plot(pen="w")
 
         self.region.sigRegionChanged.connect(self.update)
 
