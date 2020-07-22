@@ -145,7 +145,6 @@ class OWEasyMatplot(OWWidget):
         y = self.selected = self.__input_data[:, self.attr_y0]
 
 
-
     def update(self):
         self.region.setZValue(10)
         minX, maxX = self.region.getRegion()
