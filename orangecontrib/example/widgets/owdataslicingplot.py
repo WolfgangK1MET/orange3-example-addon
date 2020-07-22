@@ -11,6 +11,8 @@ import datetime
 from PyQt5.QtWidgets import QApplication
 from pyqtgraph.graphicsItems import AxisItem
 
+from .dateaxisitem import DateAxisItem
+
 class TableUtility:
     @staticmethod
     def get_first_time_variable(dataset):
