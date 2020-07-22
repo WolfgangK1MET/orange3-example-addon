@@ -95,6 +95,11 @@ class OWEasyMatplot(OWWidget):
         # self.c1.setData(n)
         # self.c2.setData(n)
 
+    def __detect_time_variable(self):
+        time_var = TableUtility.get_first_time_variable(self.__input_data)
+
+        return time_var
+
 if __name__ == "__main__":
     from AnyQt.QtWidgets import QApplication
 
