@@ -146,11 +146,13 @@ class OWEasyMatplot(OWWidget):
         n = []
         for i, v in enumerate(x):
             n.append([v, y[i][0]])
+            print(v, y[i][0])
 
         n = np.array(n)
 
-        self.c1.setData(n)
-        self.c2.setData(n)
+        self.p1.plot(n, pen="r")
+        #self.c1.setData(n)
+        #self.c2.setData(n)
 
     def update(self):
         self.region.setZValue(10)
