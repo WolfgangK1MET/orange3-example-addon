@@ -138,12 +138,19 @@ class OWEasyMatplot(OWWidget):
         print("Update Plot")
 
         x = []
-        for row in self.__input_data:
-            x.append(dateutil.parser.parse(f'{row["DatumUhrzeit"]}'))
         y = self.selected = self.__input_data[:, self.attr_y0]
 
-        self.c1.setData(x, y)
-        self.c2.setData(x, y)
+        for row in self.__input_data:
+            x.append(dateutil.parser.parse(f'{row["DatumUhrzeit"]}'))
+
+        n = []
+        for i, v in enumerate(x):
+            n.append([v, y[i][0]])
+
+        n = np.array(n)
+
+        self.c1.setData(n)
+        self.c2.setData(n)
 
     def update(self):
         self.region.setZValue(10)
