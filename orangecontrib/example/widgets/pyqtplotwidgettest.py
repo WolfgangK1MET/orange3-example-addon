@@ -4,6 +4,25 @@ from Orange.data import Table
 from Orange.widgets.widget import OWWidget, Input, Output, Msg
 import pyqtgraph as pg
 from dateaxisitem import DateAxisItem
+from Orange.data import TimeVariable, ContinuousVariable
+
+
+class TableUtility:
+    @staticmethod
+    def get_first_time_variable(dataset):
+        for attribute in list(dataset.domain.metas) + list(dataset.domain.attributes):
+            if type(attribute) == TimeVariable:
+                return attribute
+
+        return None
+
+    @staticmethod
+    def get_first_continuous_variable(dataset):
+        for attribute in list(dataset.domain.metas) + list(dataset.domain.attributes):
+            if type(attribute) == ContinuousVariable and type(attribute) != TimeVariable:
+                return attribute
+
+        return None
 
 
 class OWEasyMatplot(OWWidget):
