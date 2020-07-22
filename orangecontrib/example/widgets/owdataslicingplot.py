@@ -67,6 +67,8 @@ class OWEasyMatplot(OWWidget):
         self.p1 = self.win.addPlot(row = 1, col = 0)
         self.p2 = self.win.addPlot(row=2, col=0)
 
+        self.p1.
+
         self.region = pg.LinearRegionItem()
         self.region.setZValue(10)
         # Add the LinearRegionItem to the ViewBox, but tell the ViewBox to exclude this
