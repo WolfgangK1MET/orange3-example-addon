@@ -9,7 +9,6 @@ from Orange.data import TimeVariable
 from Orange.widgets.utils.itemmodels import DomainModel
 import datetime
 from PyQt5.QtWidgets import QApplication
-from pyqtgraph.graphicsItems import AxisItem
 from dateaxisitem import DateAxisItem
 
 
@@ -31,9 +30,9 @@ class TableUtility:
         return None
 
 
-class OWEasyMatplot(OWWidget):
-    name = "Matplot - test"
-    description = "A widget for easy plots with matplotlib"
+class PyQtTest(OWWidget):
+    name = "PyQt Graph - 2 Graphs"
+    description = "Test to show 2 graphs"
     icon = "icons/oweasyplot.svg"
     want_main_area = True
 
@@ -125,14 +124,11 @@ class OWEasyMatplot(OWWidget):
             self.attr_x = time_var
             self.attr_y0 = TableUtility.get_first_continuous_variable(self.__input_data)
 
-            # self.cid = self.graph.canvas.mpl_connect('on_click', onclick)
             self.__update_plot()
 
         self.Outputs.selected.send(None)
 
     def __update_plot(self):
-        print("Update Plot")
-
         x = []
         y = self.selected = self.__input_data[:, self.attr_y0]
 
@@ -165,7 +161,7 @@ if __name__ == "__main__":
     table = Table("WK1_20200201.csv")
 
     a = QApplication([])
-    df = OWEasyMatplot()
+    df = PyQtTest()
 
     df.set_data(table)
 
