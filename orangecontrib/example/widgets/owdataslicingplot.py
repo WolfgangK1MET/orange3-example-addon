@@ -10,8 +10,8 @@ from Orange.widgets.utils.itemmodels import DomainModel
 import datetime
 from PyQt5.QtWidgets import QApplication
 from pyqtgraph.graphicsItems import AxisItem
+from dateaxisitem import DateAxisItem
 
-from .dateaxisitem import DateAxisItem
 
 class TableUtility:
     @staticmethod
@@ -143,9 +143,8 @@ class OWEasyMatplot(OWWidget):
         y = self.selected = self.__input_data[:, self.attr_y0]
 
         axis = DateAxisItem()
-
-        c = self.p1.plot(x=x, y=y, title='Timed data', axisItems={'bottom': datetime})
-
+        self.p1.setAxisItems({"bottom": axis})
+        
 
     def update(self):
         self.region.setZValue(10)
