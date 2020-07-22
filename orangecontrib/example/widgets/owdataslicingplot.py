@@ -74,10 +74,6 @@ class OWEasyMatplot(OWWidget):
         self.p2.addItem(self.region, ignoreBounds=True)
 
         self.p1.setAutoVisible(y=True)
-        self.data1 = 10000 + 15000 * pg.gaussianFilter(np.random.random(size=10000), 10) + 3000 * np.random.random(
-            size=10000)
-        self.data2 = 15000 + 15000 * pg.gaussianFilter(np.random.random(size=10000), 10) + 3000 * np.random.random(
-            size=10000)
 
         self.c1 = self.p1.plot(pen="r")
         self.c2 = self.p2.plot(pen="w")
@@ -141,7 +137,7 @@ class OWEasyMatplot(OWWidget):
         y = self.selected = self.__input_data[:, self.attr_y0]
 
         for row in self.__input_data:
-            x.append(dateutil.parser.parse(f'{row["DatumUhrzeit"]}'))
+            x.append((dateutil.parser.parse(f'{row["DatumUhrzeit"]}') - datetime.datetime(1970, 1, 1)).total_seconds())
 
         n = []
         for i, v in enumerate(x):
@@ -150,9 +146,8 @@ class OWEasyMatplot(OWWidget):
 
         n = np.array(n)
 
-        self.p1.plot(n, pen="r")
-        #self.c1.setData(n)
-        #self.c2.setData(n)
+        self.p1.plot(n, pen="w")
+        self.p2.plot(n, pen="r")
 
     def update(self):
         self.region.setZValue(10)
@@ -163,6 +158,7 @@ class OWEasyMatplot(OWWidget):
         time_var = TableUtility.get_first_time_variable(self.__input_data)
 
         return time_var
+
 
 if __name__ == "__main__":
 
