@@ -78,8 +78,10 @@ class OWEasyMatplot(OWWidget):
             size=10000)
         self.data2 = 15000 + 15000 * pg.gaussianFilter(np.random.random(size=10000), 10) + 3000 * np.random.random(
             size=10000)
+        axis = DateAxisItem()
+        self.p1.setAxisItems({"bottom": axis})
 
-        self.p1.plot(self.data1, pen="r")
+        self.p1.plot(self.data1, pen="r", {"bottom": axis})
         self.p2.plot(self.data1, pen="w")
 
         self.region.sigRegionChanged.connect(self.update)
@@ -142,9 +144,7 @@ class OWEasyMatplot(OWWidget):
             x.append(dateutil.parser.parse(f'{row["DatumUhrzeit"]}'))
         y = self.selected = self.__input_data[:, self.attr_y0]
 
-        axis = DateAxisItem()
-        self.p1.setAxisItems({"bottom": axis})
-        
+
 
     def update(self):
         self.region.setZValue(10)
