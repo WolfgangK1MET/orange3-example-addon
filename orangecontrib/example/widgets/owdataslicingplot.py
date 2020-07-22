@@ -9,6 +9,7 @@ from Orange.data import TimeVariable
 from Orange.widgets.utils.itemmodels import DomainModel
 import datetime
 
+
 class TableUtility:
     @staticmethod
     def get_first_time_variable(dataset):
@@ -138,8 +139,8 @@ class OWEasyMatplot(OWWidget):
             x.append(dateutil.parser.parse(f'{row["DatumUhrzeit"]}'))
         y = self.selected = self.__input_data[:, self.attr_y0]
 
-        c = self.p1.plot()
-        c.setData(x = x, y = y)
+        c = self.p1.plot(x=x, y=y, title='Timed data', axisItems={'bottom': datetime})
+
 
     def update(self):
         self.region.setZValue(10)
