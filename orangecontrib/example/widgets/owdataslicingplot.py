@@ -142,7 +142,8 @@ class OWEasyMatplot(OWWidget):
             x.append(dateutil.parser.parse(f'{row["DatumUhrzeit"]}'))
         y = self.selected = self.__input_data[:, self.attr_y0]
 
-        self.c1
+        self.c1.setData(x, y)
+        self.c2.setData(x, y)
 
     def update(self):
         self.region.setZValue(10)
