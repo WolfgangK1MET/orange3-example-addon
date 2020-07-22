@@ -8,7 +8,8 @@ import dateutil.parser
 from Orange.data import TimeVariable
 from Orange.widgets.utils.itemmodels import DomainModel
 import datetime
-
+from PyQt5.QtWidgets import QApplication
+from pyqtgraph.graphicsItems import AxisItem
 
 class TableUtility:
     @staticmethod
@@ -139,6 +140,8 @@ class OWEasyMatplot(OWWidget):
             x.append(dateutil.parser.parse(f'{row["DatumUhrzeit"]}'))
         y = self.selected = self.__input_data[:, self.attr_y0]
 
+        axis = DateAxisItem()
+
         c = self.p1.plot(x=x, y=y, title='Timed data', axisItems={'bottom': datetime})
 
 
@@ -153,7 +156,6 @@ class OWEasyMatplot(OWWidget):
         return time_var
 
 if __name__ == "__main__":
-    from AnyQt.QtWidgets import QApplication
 
     table = Table("WK1_20200201.csv")
 
