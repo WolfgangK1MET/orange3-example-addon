@@ -9,8 +9,8 @@ import numpy as np
 import dateutil.parser
 from Orange.data import TimeVariable
 from Orange.widgets.utils.itemmodels import DomainModel
-from dateaxisitem import DateAxisItem
 import datetime
+from dateaxisitem import DateAxisItem
 
 
 class TableUtility:
@@ -52,21 +52,19 @@ class OwSimplePyQtGraph(OWWidget):
     def __init__(self):
         super().__init__()
 
+        self.plots = []
+
         self.__input_data = None
         self.Warning.empty_data(shown=True)
 
         self.graph = pg.GraphicsLayoutWidget()
-        self.p1 = self.graph.addPlot()
-        self.graph.removeItem(self.p1)
 
-        self.p1 = self.graph.addPlot()
-        self.p2 = self.graph.addPlot()
-        self.graph.removeItem(self.p1)
+        self.p1 = self.graph.addPlot(axisItems = {'bottom': DateAxisItem()})
+
         self.mainArea.layout().addWidget(self.graph)
 
-        dmod = DomainModel
-        self.x_model = DomainModel(dmod.MIXED, valid_types=TimeVariable)
-        self.y_model = DomainModel(dmod.MIXED, valid_types=ContinuousVariable)
+        self.x_model = DomainModel(DomainModel.MIXED, valid_types=TimeVariable)
+        self.y_model = DomainModel(DomainModel.MIXED, valid_types=ContinuousVariable)
 
         self.show()
 
@@ -76,52 +74,74 @@ class OwSimplePyQtGraph(OWWidget):
 
         if dataset is not None:
             self.Warning.empty_data(shown=False)
-            time_var = self.__detect_time_variable()
 
             self.x_model.set_domain(dataset.domain)
             self.y_model.set_domain(dataset.domain)
+
+            # Reagieren, falls nichts gefunden wird.
+            self.attr_y0 = self.__detect_time_variable()
+
+            if self.attr_y0 is not None:
+                self.__update_plot()
+            else:
+                pass
 
         self.Outputs.selected.send(None)
 
     # Adds a new plot and initialize it if data is available
     def __add_plot(self):
-        pass
+        new_plot = self.graph.addPlot()
+        # Die neue Linie irgendwo speichern?
+        self.plots.append(new_plot)
+
+        return new_plot
 
     # Maybe with context menu (if possible)
     def __remove_plot(self, plot_number):
-        pass
+        plot = self.plots[plot_number]
+        self.plots.remove(plot)
 
-    def __remove_plot(self):
-        pass
+    def __remove_axis(self, plot_number, axis_number):
+        plot = self.plots[plot_number]
+        y_values = plot.y_axes[axis_number]
+        plot.y_axes.remove(y_values)
 
     def __add_axis(self, plot_number, axis_type):
-        pass
-
-    def __remove_axis(self, plot_number, axis_name):
-        pass
+        plot = self.plots[plot_number]
+        # Todo Werte herausholen
+        values = None
+        plot.plot(values)
 
     def __get_values_from_y_axis(self, y_axis):
         y = self.__input_data[:, y_axis]
+
         return y
 
     def __get_time_values_of_axis(self, x_axis_name):
+        x = []
+
         for row in self.__input_data:
             x.append((dateutil.parser.parse(f'{row[x_axis_name]}') - datetime.datetime(1970, 1, 1)).total_seconds())
-            
-    def __update_plot(self):
-        x = []
-        y = self.__get_values_from_y_axis(self.attr_y0)
 
-        for row in self.__input_data:
-            x.append((dateutil.parser.parse(f'{row["DatumUhrzeit"]}') - datetime.datetime(1970, 1, 1)).total_seconds())
+        return x
 
+    @staticmethod
+    def __merge_x_and_y_values(x, y):
         n = []
         for i, v in enumerate(x):
             n.append([v, y[i][0]])
 
-        n = np.array(n)
+        return np.array(n)
 
-        self.graph.plot(n, pen="r")
+    def __update_plot(self):
+        y = self.__get_values_from_y_axis(self.attr_y0)
+        for v in y:
+            print(v)
+        x = self.__get_time_values_of_axis("DatumUhrzeit")
+
+        n = OwSimplePyQtGraph.__merge_x_and_y_values(x, y)
+
+        self.p1.plot(n)
 
     def __detect_time_variable(self):
         time_var = TableUtility.get_first_time_variable(self.__input_data)
