@@ -130,9 +130,12 @@ class PyQtTest(OWWidget):
         y = self.selected = self.__input_data[:, self.attr_y0]
 
         for row in self.__input_data:
-            v = int (dateutil.parser.parse(f'{row["DatumUhrzeit"]}').strftime("%s"))
+            dt = dateutil.parser.parse(f'{row["DatumUhrzeit"]}')
+            print(dt)
+            v = dt - datetime.datetime(2000, 1, 1)
+            v = v.total_seconds()
             x.append(v)
-            print(dateutil.parser.parse(f'{row["DatumUhrzeit"]}'))
+            # print(dateutil.parser.parse(f'{row["DatumUhrzeit"]}'))
 
         n = []
         for i, v in enumerate(x):
