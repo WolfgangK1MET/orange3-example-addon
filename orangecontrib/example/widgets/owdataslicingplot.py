@@ -89,6 +89,7 @@ class PyQtTest(OWWidget):
 
         self.x_model = DomainModel(dmod.MIXED, valid_types=TimeVariable)
         self.y_model = DomainModel(dmod.MIXED, valid_types=ContinuousVariable)
+        self.region.sigRegionChanged.connect(self.update)
 
     def mouseMoved(self, evt):
         pos = evt[0]  ## using signal proxy turns original arguments into a tuple
@@ -122,6 +123,7 @@ class PyQtTest(OWWidget):
             self.attr_y0 = TableUtility.get_first_continuous_variable(self.__input_data)
 
             self.__update_plot()
+            self.update()
 
         self.Outputs.selected.send(None)
 
@@ -130,9 +132,12 @@ class PyQtTest(OWWidget):
         y = self.selected = self.__input_data[:, self.attr_y0]
 
         for row in self.__input_data:
+            # Die Daten stimmen
             dt = dateutil.parser.parse(f'{row["DatumUhrzeit"]}')
             print(dt)
-            v = dt - datetime.datetime(2000, 1, 1)
+            # Es ist nicht klar auf welches Datum sich die vergangenen Sekunden beziehen müssen
+            v = dt - datetime.datetime(1970, 1, 1)
+            # Es wird auf jeden Fall falsch dargestellt.
             v = v.total_seconds()
             x.append(v)
             # print(dateutil.parser.parse(f'{row["DatumUhrzeit"]}'))
