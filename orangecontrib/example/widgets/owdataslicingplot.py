@@ -74,9 +74,6 @@ class PyQtTest(OWWidget):
 
         self.p1.setAutoVisible(y=True)
 
-        self.c1 = self.p1.plot(pen="r")
-        self.c2 = self.p2.plot(pen="w")
-
         self.region.sigRegionChanged.connect(self.update)
 
         self.vLine = pg.InfiniteLine(angle=90, movable=False)
@@ -133,7 +130,9 @@ class PyQtTest(OWWidget):
         y = self.selected = self.__input_data[:, self.attr_y0]
 
         for row in self.__input_data:
-            x.append((dateutil.parser.parse(f'{row["DatumUhrzeit"]}') - datetime.datetime(1970, 1, 1)).total_seconds())
+            v = int (dateutil.parser.parse(f'{row["DatumUhrzeit"]}').strftime("%s"))
+            x.append(v)
+            print(dateutil.parser.parse(f'{row["DatumUhrzeit"]}'))
 
         n = []
         for i, v in enumerate(x):
