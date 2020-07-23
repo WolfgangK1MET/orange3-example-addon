@@ -94,12 +94,23 @@ class OwSimplePyQtGraph(OWWidget):
     def __remove_plot(self):
         pass
 
+    def __add_axis(self, plot_number, axis_type):
+        pass
 
+    def __remove_axis(self, plot_number, axis_name):
+        pass
+
+    def __get_values_from_y_axis(self, y_axis):
+        y = self.__input_data[:, y_axis]
+        return y
+
+    def __get_time_values_of_axis(self, x_axis_name):
+        for row in self.__input_data:
+            x.append((dateutil.parser.parse(f'{row[x_axis_name]}') - datetime.datetime(1970, 1, 1)).total_seconds())
+            
     def __update_plot(self):
-        print("Update Plot")
-
         x = []
-        y = self.selected = self.__input_data[:, self.attr_y0]
+        y = self.__get_values_from_y_axis(self.attr_y0)
 
         for row in self.__input_data:
             x.append((dateutil.parser.parse(f'{row["DatumUhrzeit"]}') - datetime.datetime(1970, 1, 1)).total_seconds())
@@ -107,7 +118,6 @@ class OwSimplePyQtGraph(OWWidget):
         n = []
         for i, v in enumerate(x):
             n.append([v, y[i][0]])
-            print(v, y[i][0])
 
         n = np.array(n)
 
