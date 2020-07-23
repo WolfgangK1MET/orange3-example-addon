@@ -54,23 +54,9 @@ class OwSimplePyQtGraph(OWWidget):
         self.__input_data = None
         self.Warning.empty_data(shown=True)
 
-        self.graph = pg.PlotWidget(axisItems = {'bottom': DateAxisItem()})
+        self.graph = pg.GraphicsLayoutWidget()
 
-        self.graph.setAutoVisible(y=True)
-
-        self.c1 = self.graph.plot(pen="r")
-
-        self.vLine = pg.InfiniteLine(angle=90, movable=False)
-        self.hLine = pg.InfiniteLine(angle=0, movable=False)
-        self.graph.addItem(self.vLine, ignoreBounds=True)
-        self.graph.addItem(self.hLine, ignoreBounds=True)
-
-        dmod = DomainModel
-        self.x_model = DomainModel(dmod.MIXED, valid_types=TimeVariable)
-        self.y_model = DomainModel(dmod.MIXED, valid_types=ContinuousVariable)
-
-        # box = gui.vBox(self.mainArea, True, margin=0)
-        self.mainArea.layout().addWidget(self.graph)
+        
         self.show()
 
     @Inputs.data
