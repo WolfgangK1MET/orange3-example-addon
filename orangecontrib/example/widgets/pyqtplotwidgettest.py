@@ -12,6 +12,7 @@ from Orange.widgets.utils.itemmodels import DomainModel
 from dateaxisitem import DateAxisItem
 import datetime
 
+
 class TableUtility:
     @staticmethod
     def get_first_time_variable(dataset):
@@ -54,7 +55,7 @@ class OwSimplePyQtGraph(OWWidget):
         self.__input_data = None
         self.Warning.empty_data(shown=True)
 
-        self.graph = pg.GraphicsLayoutWidget()
+        self.p1 = self.graph = pg.GraphicsLayoutWidget()
 
         self.graph.addPlot()
 
@@ -90,13 +91,12 @@ class OwSimplePyQtGraph(OWWidget):
         n = np.array(n)
 
         self.graph.plot(n, pen="r")
-        # self.c1.setData(n)
-        # self.c2.setData(n)
 
     def __detect_time_variable(self):
         time_var = TableUtility.get_first_time_variable(self.__input_data)
 
         return time_var
+
 
 if __name__ == "__main__":
     from AnyQt.QtWidgets import QApplication
