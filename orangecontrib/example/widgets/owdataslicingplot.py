@@ -146,7 +146,7 @@ class PyQtTest(OWWidget):
         for i, v in enumerate(x):
             n.append([v, y[i][0]])
             print(v, y[i][0])
-
+        # Es müsste getestet werden, ob überhaupt Werte vorhanden sind, und was eine passende Größe wäre
         self.region.setRegion([n[0][0], n[10][0]])
         n = np.array(n)
 
