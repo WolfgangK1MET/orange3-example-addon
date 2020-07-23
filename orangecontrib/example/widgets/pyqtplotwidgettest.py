@@ -56,7 +56,8 @@ class OwSimplePyQtGraph(OWWidget):
 
         self.graph = pg.GraphicsLayoutWidget()
 
-        
+        self.graph.addPlot()
+
         self.show()
 
     @Inputs.data
@@ -69,13 +70,6 @@ class OwSimplePyQtGraph(OWWidget):
 
             self.x_model.set_domain(dataset.domain)
             self.y_model.set_domain(dataset.domain)
-
-            # TODO: Throw exception if there is no datetime or/and number type
-            self.attr_x = time_var
-            self.attr_y0 = TableUtility.get_first_continuous_variable(self.__input_data)
-
-            # self.cid = self.graph.canvas.mpl_connect('on_click', onclick)
-            self.__update_plot()
 
         self.Outputs.selected.send(None)
 
