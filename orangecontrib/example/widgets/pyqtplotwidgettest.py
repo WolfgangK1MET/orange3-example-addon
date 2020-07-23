@@ -56,7 +56,12 @@ class OwSimplePyQtGraph(OWWidget):
         self.Warning.empty_data(shown=True)
 
         self.p1 = self.graph = pg.GraphicsLayoutWidget()
+        self.graph.removeItem(self.p1)
+        self.mainArea.layout().addWidget(self.graph)
 
+        dmod = DomainModel
+        self.x_model = DomainModel(dmod.MIXED, valid_types=TimeVariable)
+        self.y_model = DomainModel(dmod.MIXED, valid_types=ContinuousVariable)
         self.graph.addPlot()
 
         self.show()
