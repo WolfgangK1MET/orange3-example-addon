@@ -55,14 +55,18 @@ class OwSimplePyQtGraph(OWWidget):
         self.__input_data = None
         self.Warning.empty_data(shown=True)
 
-        self.p1 = self.graph = pg.GraphicsLayoutWidget()
+        self.graph = pg.GraphicsLayoutWidget()
+        self.p1 = self.graph.addPlot()
+        self.graph.removeItem(self.p1)
+
+        self.p1 = self.graph.addPlot()
+        self.p2 = self.graph.addPlot()
         self.graph.removeItem(self.p1)
         self.mainArea.layout().addWidget(self.graph)
 
         dmod = DomainModel
         self.x_model = DomainModel(dmod.MIXED, valid_types=TimeVariable)
         self.y_model = DomainModel(dmod.MIXED, valid_types=ContinuousVariable)
-        self.graph.addPlot()
 
         self.show()
 
@@ -78,6 +82,18 @@ class OwSimplePyQtGraph(OWWidget):
             self.y_model.set_domain(dataset.domain)
 
         self.Outputs.selected.send(None)
+
+    # Adds a new plot and initialize it if data is available
+    def __add_plot(self):
+        pass
+
+    # Maybe with context menu (if possible)
+    def __remove_plot(self, plot_number):
+        pass
+
+    def __remove_plot(self):
+        pass
+
 
     def __update_plot(self):
         print("Update Plot")
