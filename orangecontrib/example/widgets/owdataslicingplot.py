@@ -147,6 +147,7 @@ class PyQtTest(OWWidget):
             n.append([v, y[i][0]])
             print(v, y[i][0])
 
+        self.region.setRegion([n[0][0], n[10][0]])
         n = np.array(n)
 
         self.p1.plot(n, pen="w")
