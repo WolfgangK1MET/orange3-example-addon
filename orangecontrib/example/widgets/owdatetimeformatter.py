@@ -10,11 +10,13 @@ from Orange.widgets import gui
 WIDGET_NAME = "Datetime_Formatter"
 WIDGET_ICON = "icons/mywidget.svg"
 
+
 class DatetimeFormat(IntEnum):
     UNSUPPORTED = 1
     ISO_DATETIME = 2
     DE_DATETIME_SEPARATE = 4
-    
+
+
 class DatetimeFormatter(OWWidget):
     name = WIDGET_NAME
     icon = WIDGET_ICON 
