@@ -6,7 +6,7 @@ import pyqtgraph as pg
 
 
 class OWEasyMatplot(OWWidget):
-    name = "Matplot - test"
+    name = "PYQT Plot --- Test"
     description = "A widget for easy plots with matplotlib"
     icon = "icons/oweasyplot.svg"
     want_main_area = True
