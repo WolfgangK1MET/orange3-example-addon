@@ -31,9 +31,9 @@ class TableUtility:
         return None
 
 
-class OWEasyMatplot(OWWidget):
-    name = "PYQT Plot - Test"
-    description = "A widget for easy plots with matplotlib"
+class PyQtMultiplePlot(OWWidget):
+    name = "PyQt Multiple Plot Test"
+    description = "PyQt Multiple Plot Test"
     icon = "icons/oweasyplot.svg"
     want_main_area = True
 
@@ -155,7 +155,7 @@ if __name__ == "__main__":
     table = Table("WK1_20200201.csv")
 
     a = QApplication([])
-    df = OWEasyMatplot()
+    df = PyQtMultiplePlot()
 
     df.set_data(table)
 
