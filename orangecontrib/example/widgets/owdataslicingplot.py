@@ -389,14 +389,14 @@ class PyQtGraph(OWWidget):
         self.selected = None
         self.attr_x = None
         self.attr_y0 = None
-        self.flatui = ["#9b59b6", "#3498db", "#95a5a6", "#e74c3c", "#34495e", "#2ecc71"]
+        self.flat_ui = ["#9b59b6", "#3498db", "#95a5a6", "#e74c3c", "#34495e", "#2ecc71"]
 
         self.__input_data = None
-        self.Warning.empty_data(shown=True)
+        self.Warning.empty_data(shown = True)
         self.win = pg.GraphicsLayoutWidget()
 
         # somehow it does not show the label
-        self.label = pg.LabelItem(justify='right')
+        self.label = pg.LabelItem(justify = 'right')
         self.win.addItem(self.label)
 
         self.mainArea.layout().addWidget(self.win)
@@ -404,7 +404,7 @@ class PyQtGraph(OWWidget):
         self.win.setBackground('w')
 
         self.p1 = self.win.addPlot(row = 1, col = 0, axisItems = {'bottom': DateAxisItem()})
-        self.p2 = self.win.addPlot(row=2, col=0, axisItems = {'bottom': DateAxisItem()})
+        self.p2 = self.win.addPlot(row = 2, col = 0, axisItems = {'bottom': DateAxisItem()})
 
         self.region = pg.LinearRegionItem()
         self.region.setZValue(10)
@@ -419,12 +419,12 @@ class PyQtGraph(OWWidget):
 
         self.attr_box = gui.vBox(self.controlArea, True)
 
-        self.cb_attr_x = gui.comboBox(self.attr_box, self, "attr_x", label="Axis x:",
-                                      callback=self.set_attr_x_from_combo, model=self.x_model,
-                                      searchable=True)
+        self.cb_attr_x = gui.comboBox(self.attr_box, self, "attr_x", label = "Axis x:",
+                                      callback = self.set_attr_x_from_combo, model = self.x_model,
+                                      searchable = True)
 
-        self.cb_attr_y0 = gui.comboBox(self.attr_box, self, "attr_y0", label="Axis y:",
-                                       callback=self.set_attr_y_from_combo, model=self.y_model, searchable=True)
+        self.cb_attr_y0 = gui.comboBox(self.attr_box, self, "attr_y0", label = "Axis y:",
+                                       callback = self.set_attr_y_from_combo, model = self.y_model, searchable = True)
 
     def set_attr_x_from_combo(self):
         self.__update_plot()
@@ -436,19 +436,20 @@ class PyQtGraph(OWWidget):
 
     def mouse_moved(self, evt):
         pos = (evt.x(), evt.y())
+        # Vorübergehend, damit es sich nicht aufhängt ...
         return
 
         # does not work, somehow contains() crashes
         if self.p1.sceneBoundingRect().contains(pos) and self.__input_data is not None:
-            mousePoint = self.vb.mapSceneToView(pos)
-            index = int(mousePoint.x())
+            mouse_point = self.vb.mapSceneToView(pos)
+            index = int(mouse_point.x())
 
             if 0 < index < len(self.__input_data):
                 self.label.setText(
                     "<span style='font-size: 12pt'>x=%0.1f,   <span style='color: red'>y1=%0.1f</span>,   <span style='color: green'>y2=%0.1f</span>" % (
-                    mousePoint.x(), self.data1[index], self.data2[index]))
-            self.vLine.setPos(mousePoint.x())
-            self.hLine.setPos(mousePoint.y())
+                    mouse_point.x(), self.__input_data[index], self.__input_data[index]))
+            self.vLine.setPos(mouse_point.x())
+            self.hLine.setPos(mouse_point.y())
 
     def __update_region(self, evt, view_range):
         rgn = view_range[0]
@@ -506,13 +507,12 @@ class PyQtGraph(OWWidget):
         n = []
         for i, v in enumerate(x):
             n.append([v, y[i][0]])
-            print(v, y[i][0])
 
-        # Es müsste getestet werden, ob überhaupt Werte vorhanden sind, und was eine passende Größe wäre
-        self.region.setRegion([n[0][0], n[10][0]])
+        if np.size(n, 0) > 0 and np.size(n, 1) > 0:
+            self.region.setRegion([n[0][0], n[np.size(n, 0) // 2][0]])
         n = np.array(n)
 
-        # pen color = curve color
+        # pen color = curve color #
         self.p1.clear()
         self.p2.clear()
 
@@ -527,8 +527,8 @@ class PyQtGraph(OWWidget):
         self.p1.addItem(self.vLine, ignoreBounds=True)
         self.p1.addItem(self.hLine, ignoreBounds=True)
 
-        self.p1.plot(n, pen=self.flatui[1])
-        self.p2.plot(n, pen=self.flatui[3])
+        self.p1.plot(n, pen = self.flat_ui[1])
+        self.p2.plot(n, pen = self.flat_ui[3])
 
     def __update(self):
         self.region.setZValue(10)
