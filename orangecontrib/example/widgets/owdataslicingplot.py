@@ -434,7 +434,7 @@ class PyQtGraph(OWWidget):
         self.p1.scene().sigMouseMoved.connect(self.mouseMoved)
 
     def mouseMoved(self, evt):
-        pos = (evt.x(), evt.y())
+        pos = (evt.y(), evt.x())
 
         if self.p1.sceneBoundingRect().contains(pos) and self.__input_data is not None:
             mousePoint = self.vb.mapSceneToView(pos)
