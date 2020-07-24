@@ -51,7 +51,7 @@ class PyQtMultiplePlot(OWWidget):
 
     def __init__(self):
         super().__init__()
-
+        self.attr_y0 = None
         self.plots = []
 
         self.__input_data = None
@@ -79,7 +79,7 @@ class PyQtMultiplePlot(OWWidget):
             self.y_model.set_domain(dataset.domain)
 
             # Reagieren, falls nichts gefunden wird.
-            self.attr_y0 = self.__detect_time_variable()
+            self.attr_y0 = TableUtility.get_first_continuous_variable(self.__input_data)
 
             if self.attr_y0 is not None:
                 self.__update_plot()
@@ -113,7 +113,7 @@ class PyQtMultiplePlot(OWWidget):
         plot.plot(values)
 
     def __get_values_from_y_axis(self, y_axis):
-        y = self.__input_data[:, y_axis]
+        y = self.selected = self.__input_data[:, y_axis]
 
         return y
 
@@ -130,7 +130,7 @@ class PyQtMultiplePlot(OWWidget):
         n = []
         for i, v in enumerate(x):
             n.append([v, y[i][0]])
-
+            print(y[i][0])
         return np.array(n)
 
     def __update_plot(self):
@@ -139,7 +139,7 @@ class PyQtMultiplePlot(OWWidget):
             print(v)
         x = self.__get_time_values_of_axis("DatumUhrzeit")
 
-        n = OwSimplePyQtGraph.__merge_x_and_y_values(x, y)
+        n = PyQtMultiplePlot.__merge_x_and_y_values(x, y)
 
         self.p1.plot(n)
 
