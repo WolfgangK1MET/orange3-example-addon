@@ -154,6 +154,7 @@ class MultiplotTest(OWWidget, QtWidgets.QMainWindow):
     def set_input_data(self, data):
         self.__input_data = data
 
+
 if __name__ == "__main__":
     from AnyQt.QtWidgets import QApplication
     from Orange.widgets.utils.widgetpreview import WidgetPreview  # since Orange 3.20.0
