@@ -364,10 +364,10 @@ class TableUtility:
         return None
 
 
-class OWEasyMatplot(OWWidget):
-    name = "PyQt Graph - 2 Graphs"
-    description = "Test to show 2 graphs"
-    icon = "icons/oweasyplot.svg"
+class PyQtGraph(OWWidget):
+    name = "PyQt Graph with Region"
+    description = "PyQt Graph with Region"
+    icon = "icons/mywidget.svg"
     want_main_area = True
 
     class Inputs:
@@ -503,7 +503,7 @@ if __name__ == "__main__":
     table = Table("WK1_20200201.csv")
 
     a = QApplication([])
-    df = OWEasyMatplot()
+    df = PyQtGraph()
 
     df.set_data(table)
 
