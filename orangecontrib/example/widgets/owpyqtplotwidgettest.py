@@ -31,9 +31,9 @@ class TableUtility:
         return None
 
 
-class OwSimplePyQtGraph(OWWidget):
-    name = "PyQt Graph"
-    description = ""
+class OWEasyMatplot(OWWidget):
+    name = "PYQT Plot - Test"
+    description = "A widget for easy plots with matplotlib"
     icon = "icons/oweasyplot.svg"
     want_main_area = True
 
@@ -155,7 +155,7 @@ if __name__ == "__main__":
     table = Table("WK1_20200201.csv")
 
     a = QApplication([])
-    df = OwSimplePyQtGraph()
+    df = OWEasyMatplot()
 
     df.set_data(table)
 
