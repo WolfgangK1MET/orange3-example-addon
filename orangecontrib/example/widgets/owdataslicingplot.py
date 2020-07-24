@@ -377,7 +377,8 @@ class PyQtGraph(OWWidget):
         selected = Output("Selected Data", Orange.data.Table)
 
     class Error(OWWidget.Error):
-        pass
+        no_date_time_found = Msg("No datetime was found.")
+        no_value_found = Msg("No value to plot.")
 
     class Warning(OWWidget.Warning):
         empty_data = Msg("There is no data to show.")
@@ -385,7 +386,9 @@ class PyQtGraph(OWWidget):
     def __init__(self):
         super().__init__()
 
-        dmod = DomainModel
+        self.selected = None
+
+        self.flatui = ["#9b59b6", "#3498db", "#95a5a6", "#e74c3c", "#34495e", "#2ecc71"]
 
         self.__input_data = None
         self.Warning.empty_data(shown=True)
@@ -396,6 +399,8 @@ class PyQtGraph(OWWidget):
         self.win.addItem(self.label)
 
         self.mainArea.layout().addWidget(self.win)
+
+        self.win.setBackground('w')
 
         self.p1 = self.win.addPlot(row = 1, col = 0, axisItems = {'bottom': DateAxisItem()})
         self.p2 = self.win.addPlot(row=2, col=0, axisItems = {'bottom': DateAxisItem()})
@@ -421,8 +426,8 @@ class PyQtGraph(OWWidget):
 
         self.region.setRegion([1000, 2000])
 
-        self.x_model = DomainModel(dmod.MIXED, valid_types=TimeVariable)
-        self.y_model = DomainModel(dmod.MIXED, valid_types=ContinuousVariable)
+        self.x_model = DomainModel(DomainModel.MIXED, valid_types=TimeVariable)
+        self.y_model = DomainModel(DomainModel.MIXED, valid_types=ContinuousVariable)
         self.region.sigRegionChanged.connect(self.update)
 
     def mouseMoved(self, evt):
@@ -444,6 +449,10 @@ class PyQtGraph(OWWidget):
     @Inputs.data
     def set_data(self, dataset):
         self.__input_data = dataset
+        self.selected = None
+
+        self.Error.no_date_time_found(shown = False)
+        self.Error.no_value_found(shown = False)
 
         if dataset is not None:
             self.Warning.empty_data(shown=False)
@@ -452,14 +461,24 @@ class PyQtGraph(OWWidget):
             self.x_model.set_domain(dataset.domain)
             self.y_model.set_domain(dataset.domain)
 
-            # TODO: Throw exception if there is no datetime or/and number type
             self.attr_x = time_var
+
+            if self.attr_x is None:
+                self.Outputs.selected.send(None)
+                self.Error.no_date_time_found(shown = True)
+                return
+
             self.attr_y0 = TableUtility.get_first_continuous_variable(self.__input_data)
+
+            if self.attr_y0 is None:
+                self.Outputs.selected.send(None)
+                self.Error.no_value_found(shown = True)
+                return
 
             self.__update_plot()
             self.update()
 
-        self.Outputs.selected.send(None)
+        self.Outputs.selected.send(self.selected)
 
     def __update_plot(self):
         x = []
@@ -484,8 +503,8 @@ class PyQtGraph(OWWidget):
         self.region.setRegion([n[0][0], n[10][0]])
         n = np.array(n)
 
-        self.p1.plot(n, pen="w")
-        self.p2.plot(n, pen="r")
+        self.p1.plot(n, pen=self.flatui[1])
+        self.p2.plot(n, pen=self.flatui[3])
 
     def update(self):
         self.region.setZValue(10)
