@@ -5,9 +5,9 @@ from Orange.widgets.widget import OWWidget, Input, Output, Msg
 import pyqtgraph as pg
 
 
-class OWEasyMatplot(OWWidget):
-    name = "PYQT Plot --- Test"
-    description = "A widget for easy plots with matplotlib"
+class OwPyqtPlot(OWWidget):
+    name = "PYQT Very Simple Plot Test"
+    description = "PYQT Very Simple Plot Test"
     icon = "icons/oweasyplot.svg"
     want_main_area = True
 
@@ -48,7 +48,7 @@ if __name__ == "__main__":
     table = Table("WK1_20200201.csv")
 
     a = QApplication([])
-    df = OWEasyMatplot()
+    df = OwPyqtPlot()
 
     df.set_data(table)
 
