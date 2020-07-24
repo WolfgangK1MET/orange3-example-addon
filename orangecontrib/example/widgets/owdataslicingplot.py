@@ -435,7 +435,9 @@ class PyQtGraph(OWWidget):
 
     def mouseMoved(self, evt):
         pos = (evt.y(), evt.x())
+        return
 
+        # does not work, somehow contains() crashes
         if self.p1.sceneBoundingRect().contains(pos) and self.__input_data is not None:
             mousePoint = self.vb.mapSceneToView(pos)
             index = int(mousePoint.x())
