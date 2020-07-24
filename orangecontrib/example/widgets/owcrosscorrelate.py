@@ -48,6 +48,7 @@ def getIntegralQuartileIndex(a):
         
     return [q1, q2, q3]
 
+
 class OWCrossCorrelate(widget.OWWidget):
     # Widget needs a name, or it is considered an abstract widget
     # and not shown in the menu.
