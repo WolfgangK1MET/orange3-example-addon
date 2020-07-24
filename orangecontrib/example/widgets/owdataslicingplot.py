@@ -490,19 +490,22 @@ class PyQtGraph(OWWidget):
             print(dt)
             # Es ist nicht klar auf welches Datum sich die vergangenen Sekunden beziehen müssen
             v = dt - datetime(1970, 1, 1)
-            # Es wird auf jeden Fall falsch dargestellt.
+            # Es wird auf jeden Fall nicht korrekt dargestellt.
             v = v.total_seconds()
             x.append(v)
+
             # print(dateutil.parser.parse(f'{row["DatumUhrzeit"]}'))
 
         n = []
         for i, v in enumerate(x):
             n.append([v, y[i][0]])
-            print(v, y[i][0])
+            # print(v, y[i][0])
+
         # Es müsste getestet werden, ob überhaupt Werte vorhanden sind, und was eine passende Größe wäre
         self.region.setRegion([n[0][0], n[10][0]])
         n = np.array(n)
 
+        # pen color = curve color
         self.p1.plot(n, pen=self.flatui[1])
         self.p2.plot(n, pen=self.flatui[3])
 
@@ -518,7 +521,6 @@ class PyQtGraph(OWWidget):
 
 
 if __name__ == "__main__":
-
     table = Table("WK1_20200201.csv")
 
     a = QApplication([])
