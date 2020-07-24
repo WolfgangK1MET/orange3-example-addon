@@ -136,7 +136,7 @@ class PyQtTest(OWWidget):
             dt = dateutil.parser.parse(f'{row["DatumUhrzeit"]}')
             print(dt)
             # Es ist nicht klar auf welches Datum sich die vergangenen Sekunden beziehen müssen
-            v = dt - datetime.datetime(1970, 1, 1)
+            v = dt - datetime.datetime.now()
             # Es wird auf jeden Fall falsch dargestellt.
             v = v.total_seconds()
             x.append(v)
