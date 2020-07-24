@@ -11,11 +11,11 @@ import datetime
 from PyQt5.QtWidgets import QApplication
 
 # from github, ist seltsamerweise in der vorhandenen pyqtgraph Version nicht vorhanden?
-
 import sys
 import numpy as np
 import time
 from datetime import datetime, timedelta
+from Orange.widgets import gui
 
 from pyqtgraph.graphicsItems.AxisItem import AxisItem
 from pyqtgraph.pgcollections import OrderedDict
@@ -387,13 +387,13 @@ class PyQtGraph(OWWidget):
         super().__init__()
 
         self.selected = None
-
+        self.attr_x = None
+        self.attr_y0 = None
         self.flatui = ["#9b59b6", "#3498db", "#95a5a6", "#e74c3c", "#34495e", "#2ecc71"]
 
         self.__input_data = None
         self.Warning.empty_data(shown=True)
         self.win = pg.GraphicsLayoutWidget()
-        self.win.setWindowTitle("Test")
 
         # somehow it does not show the label
         self.label = pg.LabelItem(justify='right')
@@ -408,33 +408,34 @@ class PyQtGraph(OWWidget):
 
         self.region = pg.LinearRegionItem()
         self.region.setZValue(10)
-        # Add the LinearRegionItem to the ViewBox, but tell the ViewBox to exclude this
-        # item when doing auto-range calculations.
-        self.p2.addItem(self.region, ignoreBounds=True)
 
-        self.p1.setAutoVisible(y=True)
+        self.x_model = DomainModel(DomainModel.MIXED, valid_types = TimeVariable)
+        self.y_model = DomainModel(DomainModel.MIXED, valid_types = ContinuousVariable)
 
         self.region.sigRegionChanged.connect(self.__update)
-
-        self.vLine = pg.InfiniteLine(angle=90, movable=False)
-        self.hLine = pg.InfiniteLine(angle=0, movable=False)
-        self.p1.addItem(self.vLine, ignoreBounds=True)
-        self.p1.addItem(self.hLine, ignoreBounds=True)
-
-        self.vb = self.p1.vb
-
         self.p1.sigRangeChanged.connect(self.__update_region)
-
-        self.region.setRegion([1000, 2000])
-
-        self.x_model = DomainModel(DomainModel.MIXED, valid_types=TimeVariable)
-        self.y_model = DomainModel(DomainModel.MIXED, valid_types=ContinuousVariable)
         self.region.sigRegionChanged.connect(self.__update)
+        self.p1.scene().sigMouseMoved.connect(self.mouse_moved)
 
-        self.p1.scene().sigMouseMoved.connect(self.mouseMoved)
+        self.attr_box = gui.vBox(self.controlArea, True)
 
-    def mouseMoved(self, evt):
-        pos = (evt.y(), evt.x())
+        self.cb_attr_x = gui.comboBox(self.attr_box, self, "attr_x", label="Axis x:",
+                                      callback=self.set_attr_x_from_combo, model=self.x_model,
+                                      searchable=True)
+
+        self.cb_attr_y0 = gui.comboBox(self.attr_box, self, "attr_y0", label="Axis y:",
+                                       callback=self.set_attr_y_from_combo, model=self.y_model, searchable=True)
+
+    def set_attr_x_from_combo(self):
+        self.__update_plot()
+        self.__update()
+
+    def set_attr_y_from_combo(self):
+        self.__update_plot()
+        self.__update()
+
+    def mouse_moved(self, evt):
+        pos = (evt.x(), evt.y())
         return
 
         # does not work, somehow contains() crashes
@@ -505,13 +506,27 @@ class PyQtGraph(OWWidget):
         n = []
         for i, v in enumerate(x):
             n.append([v, y[i][0]])
-            # print(v, y[i][0])
+            print(v, y[i][0])
 
         # Es müsste getestet werden, ob überhaupt Werte vorhanden sind, und was eine passende Größe wäre
         self.region.setRegion([n[0][0], n[10][0]])
         n = np.array(n)
 
         # pen color = curve color
+        self.p1.clear()
+        self.p2.clear()
+
+        # Add the LinearRegionItem to the ViewBox, but tell the ViewBox to exclude this
+        # item when doing auto-range calculations.
+        self.p2.addItem(self.region, ignoreBounds=True)
+
+        self.p1.setAutoVisible(y=True)
+
+        self.vLine = pg.InfiniteLine(angle=90, movable=False)
+        self.hLine = pg.InfiniteLine(angle=0, movable=False)
+        self.p1.addItem(self.vLine, ignoreBounds=True)
+        self.p1.addItem(self.hLine, ignoreBounds=True)
+
         self.p1.plot(n, pen=self.flatui[1])
         self.p2.plot(n, pen=self.flatui[3])
 
