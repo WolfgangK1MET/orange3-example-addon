@@ -395,6 +395,7 @@ class PyQtGraph(OWWidget):
         self.win = pg.GraphicsLayoutWidget()
         self.win.setWindowTitle("Test")
 
+        # somehow it does not show the label
         self.label = pg.LabelItem(justify='right')
         self.win.addItem(self.label)
 
@@ -430,12 +431,16 @@ class PyQtGraph(OWWidget):
         self.y_model = DomainModel(DomainModel.MIXED, valid_types=ContinuousVariable)
         self.region.sigRegionChanged.connect(self.update)
 
+        self.p1.scene().sigMouseMoved.connect(self.mouseMoved)
+
     def mouseMoved(self, evt):
-        pos = evt[0]  ## using signal proxy turns original arguments into a tuple
-        if self.p1.sceneBoundingRect().contains(pos):
+        pos = (evt.x(), evt.y())
+
+        if self.p1.sceneBoundingRect().contains(pos) and self.__input_data is not None:
             mousePoint = self.vb.mapSceneToView(pos)
             index = int(mousePoint.x())
-            if index > 0 and index < len(self.data1):
+
+            if 0 < index < len(self.__input_data):
                 self.label.setText(
                     "<span style='font-size: 12pt'>x=%0.1f,   <span style='color: red'>y1=%0.1f</span>,   <span style='color: green'>y2=%0.1f</span>" % (
                     mousePoint.x(), self.data1[index], self.data2[index]))
@@ -487,7 +492,7 @@ class PyQtGraph(OWWidget):
         for row in self.__input_data:
             # Die Daten stimmen
             dt = dateutil.parser.parse(f'{row["DatumUhrzeit"]}')
-            print(dt)
+            # print(dt)
             # Es ist nicht klar auf welches Datum sich die vergangenen Sekunden beziehen müssen
             v = dt - datetime(1970, 1, 1)
             # Es wird auf jeden Fall nicht korrekt dargestellt.
@@ -525,7 +530,6 @@ if __name__ == "__main__":
 
     a = QApplication([])
     df = PyQtGraph()
-
     df.set_data(table)
 
     df.show()
