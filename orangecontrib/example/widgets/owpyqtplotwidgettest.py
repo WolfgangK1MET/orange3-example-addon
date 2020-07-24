@@ -55,7 +55,7 @@ class PyQtMultiplePlot(OWWidget):
         self.plots = []
 
         self.__input_data = None
-        self.Warning.empty_data(shown=True)
+        self.Warning.empty_data(shown = True)
 
         self.graph = pg.GraphicsLayoutWidget()
 
@@ -63,8 +63,8 @@ class PyQtMultiplePlot(OWWidget):
 
         self.mainArea.layout().addWidget(self.graph)
 
-        self.x_model = DomainModel(DomainModel.MIXED, valid_types=TimeVariable)
-        self.y_model = DomainModel(DomainModel.MIXED, valid_types=ContinuousVariable)
+        self.x_model = DomainModel(DomainModel.MIXED, valid_types = TimeVariable)
+        self.y_model = DomainModel(DomainModel.MIXED, valid_types = ContinuousVariable)
 
         self.show()
 
