@@ -414,7 +414,7 @@ class PyQtGraph(OWWidget):
 
         self.p1.setAutoVisible(y=True)
 
-        self.region.sigRegionChanged.connect(self.update)
+        self.region.sigRegionChanged.connect(self.__update)
 
         self.vLine = pg.InfiniteLine(angle=90, movable=False)
         self.hLine = pg.InfiniteLine(angle=0, movable=False)
@@ -423,13 +423,13 @@ class PyQtGraph(OWWidget):
 
         self.vb = self.p1.vb
 
-        self.p1.sigRangeChanged.connect(self.updateRegion)
+        self.p1.sigRangeChanged.connect(self.__update_region)
 
         self.region.setRegion([1000, 2000])
 
         self.x_model = DomainModel(DomainModel.MIXED, valid_types=TimeVariable)
         self.y_model = DomainModel(DomainModel.MIXED, valid_types=ContinuousVariable)
-        self.region.sigRegionChanged.connect(self.update)
+        self.region.sigRegionChanged.connect(self.__update)
 
         self.p1.scene().sigMouseMoved.connect(self.mouseMoved)
 
@@ -449,8 +449,8 @@ class PyQtGraph(OWWidget):
             self.vLine.setPos(mousePoint.x())
             self.hLine.setPos(mousePoint.y())
 
-    def updateRegion(self, evt, viewRange):
-        rgn = viewRange[0]
+    def __update_region(self, evt, view_range):
+        rgn = view_range[0]
         self.region.setRegion(rgn)
 
     @Inputs.data
@@ -462,7 +462,7 @@ class PyQtGraph(OWWidget):
         self.Error.no_value_found(shown = False)
 
         if dataset is not None:
-            self.Warning.empty_data(shown=False)
+            self.Warning.empty_data(shown = False)
             time_var = self.__detect_time_variable()
 
             self.x_model.set_domain(dataset.domain)
@@ -483,7 +483,7 @@ class PyQtGraph(OWWidget):
                 return
 
             self.__update_plot()
-            self.update()
+            self.__update()
 
         self.Outputs.selected.send(self.selected)
 
@@ -492,7 +492,6 @@ class PyQtGraph(OWWidget):
         y = self.selected = self.__input_data[:, self.attr_y0]
 
         for row in self.__input_data:
-            # Die Daten stimmen
             dt = dateutil.parser.parse(f'{row["DatumUhrzeit"]}')
             # print(dt)
             # Es ist nicht klar auf welches Datum sich die vergangenen Sekunden beziehen müssen
@@ -516,10 +515,10 @@ class PyQtGraph(OWWidget):
         self.p1.plot(n, pen=self.flatui[1])
         self.p2.plot(n, pen=self.flatui[3])
 
-    def update(self):
+    def __update(self):
         self.region.setZValue(10)
         minX, maxX = self.region.getRegion()
-        self.p1.setXRange(minX, maxX, padding=0)
+        self.p1.setXRange(minX, maxX, padding = 0)
 
     def __detect_time_variable(self):
         time_var = TableUtility.get_first_time_variable(self.__input_data)
