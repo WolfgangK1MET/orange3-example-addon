@@ -242,10 +242,11 @@ class TableUtility:
     @staticmethod
     def get_first_continuous_variable(dataset):
         for attribute in list(dataset.domain.metas) + list(dataset.domain.attributes):
-            if type(attribute) == ContinuousVariable and type(attribute) != TimeVariable:
+            if type(attribute) == ContinuousVariable:
                 return attribute
 
         return None
+
 
 if __name__ == "__main__":
     from AnyQt.QtWidgets import QApplication
