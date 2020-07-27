@@ -413,8 +413,8 @@ class PyQtGraph(OWWidget):
         self.y_model = DomainModel(DomainModel.MIXED, valid_types = ContinuousVariable)
 
         self.region.sigRegionChanged.connect(self.__update)
-        self.p1.scene().sigMouseMoved.connect(self.mouse_moved)
         self.p1.sigRangeChanged.connect(self.__update_region)
+        self.p1.scene().sigMouseMoved.connect(self.mouse_moved)
 
         self.attr_box = gui.vBox(self.controlArea, True)
 
