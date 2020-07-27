@@ -20,6 +20,9 @@ from Orange.widgets import gui
 from pyqtgraph.graphicsItems.AxisItem import AxisItem
 from pyqtgraph.pgcollections import OrderedDict
 
+from PyQt5.QtWidgets import QApplication
+from PyQt5 import QtCore
+
 __all__ = ['DateAxisItem']
 
 MS_SPACING = 1 / 1000.0
@@ -451,6 +454,7 @@ class PyQtGraph(OWWidget):
             self.hLine.setPos(mouse_point.y())
 
     def __update_region(self, evt, view_range):
+        print("update region")
         rgn = view_range[0]
         self.region.setRegion(rgn)
 
@@ -489,6 +493,7 @@ class PyQtGraph(OWWidget):
         self.Outputs.selected.send(self.selected)
 
     def __update_plot(self):
+        print("update plot")
         x = []
         y = self.selected = self.__input_data[:, self.attr_y0]
 
@@ -530,6 +535,7 @@ class PyQtGraph(OWWidget):
         self.p2.plot(n, pen = self.flat_ui[3])
 
     def __update(self):
+        print("update")
         self.region.setZValue(10)
         minX, maxX = self.region.getRegion()
         self.p1.setXRange(minX, maxX, padding = 0)
@@ -544,6 +550,7 @@ if __name__ == "__main__":
     table = Table("WK1_20200201.csv")
 
     a = QApplication([])
+
     df = PyQtGraph()
     df.set_data(table)
 
