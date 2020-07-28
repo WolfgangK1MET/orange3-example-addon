@@ -477,7 +477,7 @@ class PyQtGraph(OWWidget):
 
             if self.attr_x is None:
                 self.Outputs.selected.send(None)
-                self.Error.no_date_time_found(shown = True)
+                self.Error.no_date_time_found(y = True)
                 return
 
             self.attr_y0 = TableUtility.get_first_continuous_variable(self.__input_data)
