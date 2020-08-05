@@ -79,9 +79,8 @@ class OWSeabornTest(OWWidget, QtWidgets.QMainWindow):
                 else:
                     axs[j, i].set_xlabel("")
                     axs[j, i].set_ylabel("")
-
+                    
         self.graph.canvas.figure = fig
-
         self.update()
         self.show()
         self.graph.draw()
