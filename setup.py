@@ -33,6 +33,7 @@ DATA_FILES = [
 
 INSTALL_REQUIRES = [
     'Orange3',
+    'seaborn',
 ]
 
 ENTRY_POINTS = {

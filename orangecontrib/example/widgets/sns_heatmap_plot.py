@@ -14,7 +14,7 @@ from Orange.data.pandas_compat import table_from_frame,table_to_frame
 from pyqtgraph.widgets.MatplotlibWidget import MatplotlibWidget
 
 
-class OWSeabornHeatmap(OWWidget, QtWidgets.QMainWindow):
+class OWSeabornHeatmap(OWWidget):
     name = "seaborn correlation plot"
     description = "Widget Test seaborn"
     icon = "icons/oweasyplot.svg"
